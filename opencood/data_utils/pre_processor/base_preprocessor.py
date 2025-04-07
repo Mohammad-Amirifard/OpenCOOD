@@ -26,7 +26,7 @@ class BasePreprocessor(object):
 
     def preprocess(self, pcd_np):
         """
-        Preprocess the lidar points by simple sampling.
+        Preprocess the lidar points by simple sampling. It does downsampling
 
         Parameters
         ----------
@@ -35,7 +35,7 @@ class BasePreprocessor(object):
 
         Returns
         -------
-        data_dict : the output dictionary.
+        data_dict : the output dictionary. -->{'downsample_lidar':[pcd_np]}
         """
         data_dict = {}
         sample_num = self.params['args']['sample_num']
@@ -53,6 +53,7 @@ class BasePreprocessor(object):
         ----------
         points : np.ndarray
             (N, 3) / (N, 4)
+             N can be any number.
 
         ratio : float
             Discretization parameters. Default is 0.1.
@@ -61,7 +62,7 @@ class BasePreprocessor(object):
         -------
         bev_map : np.ndarray
             BEV occupancy map including projected points with shape
-            (img_row, img_col).
+            Bev.shape:[img_row, img_col] which is 2D.
 
         """
         L1, W1, H1, L2, W2, H2 = self.params["cav_lidar_range"]

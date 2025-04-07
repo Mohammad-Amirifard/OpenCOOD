@@ -144,24 +144,25 @@ def boxes2d_to_corners2d(boxes2d, order="lwh"):
 
 def boxes_to_corners_3d(boxes3d, order):
     """
-        4 -------- 5
+     
+    Parameters
+    __________
+    boxes3d: np.ndarray or torch.Tensor
+        (N, 7) [x, y, z, dx, dy, dz, heading(Orientation of the box: Yaw angle)], (x, y, z) is the box center.
+    
+    order : str
+        'lwh' or 'hwl'
+
+    Returns:
+       4 -------- 5
        /|         /|
       7 -------- 6 .
       | |        | |
       . 0 -------- 1
       |/         |/
       3 -------- 2
-    Parameters
-    __________
-    boxes3d: np.ndarray or torch.Tensor
-        (N, 7) [x, y, z, dx, dy, dz, heading], (x, y, z) is the box center.
-
-    order : str
-        'lwh' or 'hwl'
-
-    Returns:
         corners3d: np.ndarray or torch.Tensor
-        (N, 8, 3), the 8 corners of the bounding box.
+        (N, 8, 3), the 8 corners of the bounding box, the 3 dimensions
 
     """
     # ^ z

@@ -7,30 +7,37 @@ import re
 import yaml
 import os
 import math
-
 import numpy as np
 
 
 def load_yaml(file, opt=None):
     """
-    Load yaml file and return a dictionary.
+    Load a YAML configuration file and return its contents as a dictionary.
 
     Parameters
     ----------
-    file : string
-        yaml file path.
+    file : str
+        Path to the YAML configuration file.
 
-    opt : argparser
-         Argparser.
+    opt : argparse.Namespace, optional. It is like --hypes_yaml
+        Parsed command-line arguments. If provided and contains a 'model_dir',
+        the configuration will be loaded from 'config.yaml' within that directory.
+
     Returns
     -------
     param : dict
-        A dictionary that contains defined parameters.
+        Dictionary containing parameters defined in the YAML file.
+    
+    done
     """
+    # Override the file path if a model directory is specified in the options
     if opt and opt.model_dir:
         file = os.path.join(opt.model_dir, 'config.yaml')
 
+    # Open the YAML file for reading
     stream = open(file, 'r')
+
+    # Configure the YAML loader with custom float resolver to handle scientific notation and special float values
     loader = yaml.Loader
     loader.add_implicit_resolver(
         u'tag:yaml.org,2002:float',
@@ -41,18 +48,26 @@ def load_yaml(file, opt=None):
         |[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+\\.[0-9_]*
         |[-+]?\\.(?:inf|Inf|INF)
         |\\.(?:nan|NaN|NAN))$''', re.X),
-        list(u'-+0123456789.'))
+        list(u'-+0123456789.')
+    )
+
+    # Load the YAML contents
     param = yaml.load(stream, Loader=loader)
+    
+
+    # Dynamically apply a custom parser if specified in the YAML under the "yaml_parser" key
     if "yaml_parser" in param:
         param = eval(param["yaml_parser"])(param)
-
+        
+    print(f'Configuration parameters from {opt.hypes_yaml} have been successfully loaded.')
     return param
+
 
 
 def load_voxel_params(param):
     """
     Based on the lidar range and resolution of voxel, calcuate the anchor box
-    and target resolution.
+    and target resolution. It means we create voxels/grids on the cav_lidar_range.
 
     Parameters
     ----------
@@ -65,21 +80,26 @@ def load_voxel_params(param):
         Modified parameter dictionary with new attribute `anchor_args[W][H][L]`
     """
     anchor_args = param['postprocess']['anchor_args']
-    cav_lidar_range = anchor_args['cav_lidar_range']
-    voxel_size = param['preprocess']['args']['voxel_size']
+    cav_lidar_range = anchor_args['cav_lidar_range'] # Cav Lidar range : [-140.8, -40, -3, 140.8, 40, 1]
+    voxel_size = param['preprocess']['args']['voxel_size'] # is somthing like [0.4, 0.4, 4]
 
     vw = voxel_size[0]
     vh = voxel_size[1]
     vd = voxel_size[2]
 
+    # Add a 3 new key-values to the anchor_args writen in yaml file
     anchor_args['vw'] = vw
     anchor_args['vh'] = vh
     anchor_args['vd'] = vd
-
+    
+    # Here you can see the cav_lidar_range includes  140-(-140)/.4 = 704 voxels in Width,
+    # 40-(-40)/.4 = 200 voxels in H, and 1-(-3)/4=1 voxel in z direction
+    # Add another 3 new key-values to the anchor_args writen in yaml file
     anchor_args['W'] = int((cav_lidar_range[3] - cav_lidar_range[0]) / vw)
     anchor_args['H'] = int((cav_lidar_range[4] - cav_lidar_range[1]) / vh)
     anchor_args['D'] = int((cav_lidar_range[5] - cav_lidar_range[2]) / vd)
 
+    # Now, Update the anchor_args written in the yamle file to include new values.
     param['postprocess'].update({'anchor_args': anchor_args})
 
     # sometimes we just want to visualize the data without implementing model
@@ -90,7 +110,7 @@ def load_voxel_params(param):
 
     return param
 
-
+# The only difference between above and bellow function is the additional added grid_size [704,200,1] key-value to the dictionary.
 def load_point_pillar_params(param):
     """
     Based on the lidar range and resolution of voxel, calcuate the anchor box
@@ -106,13 +126,14 @@ def load_point_pillar_params(param):
     param : dict
         Modified parameter dictionary with new attribute.
     """
-    cav_lidar_range = param['preprocess']['cav_lidar_range']
-    voxel_size = param['preprocess']['args']['voxel_size']
+    cav_lidar_range = param['preprocess']['cav_lidar_range'] # Cav Lidar range : [-140.8, -40, -3, 140.8, 40, 1]
+    voxel_size = param['preprocess']['args']['voxel_size'] # is somthing like [0.4, 0.4, 4]
 
     grid_size = (np.array(cav_lidar_range[3:6]) - np.array(
         cav_lidar_range[0:3])) / \
                 np.array(voxel_size)
     grid_size = np.round(grid_size).astype(np.int64)
+    # Grid-size is somthing like [704,200,1] which is added to the parm dict.
     param['model']['args']['point_pillar_scatter']['grid_size'] = grid_size
 
     anchor_args = param['postprocess']['anchor_args']
@@ -133,8 +154,8 @@ def load_point_pillar_params(param):
 
     return param
 
-
-def load_second_params(param):
+#// Commented this since I didn't use it anywhere.
+# def load_second_params(param):
     """
     Based on the lidar range and resolution of voxel, calcuate the anchor box
     and target resolution.
@@ -177,7 +198,9 @@ def load_second_params(param):
     return param
 
 
-def load_bev_params(param):
+# The following def is used just only for BevPreprocessor.
+#// Commented this since I didn't use it anywhere.
+#def load_bev_params(param):
     """
     Load bev related geometry parameters s.t. boundary, resolutions, input
     shape, target shape etc.
@@ -194,7 +217,7 @@ def load_bev_params(param):
 
     """
     res = param["preprocess"]["args"]["res"]
-    L1, W1, H1, L2, W2, H2 = param["preprocess"]["cav_lidar_range"]
+    L1, W1, H1, L2, W2, H2 = param["preprocess"]["cav_lidar_range"] # [-160, -40, -3, 160, 40, 1]
     downsample_rate = param["preprocess"]["args"]["downsample_rate"]
 
     def f(low, high, r):

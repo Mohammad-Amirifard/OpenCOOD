@@ -16,13 +16,13 @@ def x_to_world(pose):
 
     Parameters
     ----------
-    pose : list
+    pose : list. The data available in ecah yaml 
         [x, y, z, roll, yaw, pitch]
 
     Returns
     -------
     matrix : np.ndarray
-        The transformation matrix.
+        The transformation matrix 4*4.
     """
     x, y, z, roll, yaw, pitch = pose[:]
 
@@ -53,7 +53,15 @@ def x_to_world(pose):
 
     return matrix
 
+# coord = [51.36536407470703,
+#    139.56854248046875,
+#    1.034746766090393,
+#    -0.01754760555922985,
+#    0.7667168974876404,
+#    0.02830430306494236,]
 
+# new_coord = x_to_world(pose=coord)
+# print(new_coord)
 def x1_to_x2(x1, x2):
     """
     Transformation matrix from x1 to x2.

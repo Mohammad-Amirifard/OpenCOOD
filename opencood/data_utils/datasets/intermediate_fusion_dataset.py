@@ -26,7 +26,7 @@ from opencood.utils.transformation_utils import x1_to_x2
 
 class IntermediateFusionDataset(basedataset.BaseDataset):
     """
-    This class is for intermediate fusion where each vehicle transmit the
+    This class is for createing intermediate fusion dataset where each vehicle transmit the
     deep features to ego.
     """
     def __init__(self, params, visualize, train=True):
@@ -46,7 +46,7 @@ class IntermediateFusionDataset(basedataset.BaseDataset):
         self.cur_ego_pose_flag = True if 'cur_ego_pose_flag' not in \
             params['fusion']['args'] else \
             params['fusion']['args']['cur_ego_pose_flag']
-
+        
         self.pre_processor = build_preprocessor(params['preprocess'],
                                                 train)
         self.post_processor = post_processor.build_postprocessor(
@@ -184,6 +184,7 @@ class IntermediateFusionDataset(basedataset.BaseDataset):
             processed_data_dict['ego'].update({'origin_lidar':
                 np.vstack(
                     projected_lidar_stack)})
+        print(processed_data_dict)
         return processed_data_dict
 
     def get_item_single_car(self, selected_cav_base, ego_pose):

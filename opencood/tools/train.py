@@ -20,30 +20,62 @@ from opencood.tools import train_utils
 
 
 def train_parser():
-    parser = argparse.ArgumentParser(description="synthetic data generation")
+    
+    """
+    Initializes and returns a command-line argument parser for the training process.
+
+    Usage examples:
+        python train.py --hypes_yaml [path_to_yaml]
+        python train.py --hypes_yaml [path_to_yaml] --half
+    
+    Resturn:
+        opt: It will be something like 
+        Namespace(dist_url='env://', half=False, hypes_yaml='opencood/hypes_yaml/point_pillar_intermediate_V2VAM.yaml', model_dir='')
+    
+    done
+    """
+    # Create an argument parser with a brief description
+    parser = argparse.ArgumentParser(description="Parser for training with synthetic data")
+
+    # Required: Path to the YAML configuration file for hyperparameters
     parser.add_argument("--hypes_yaml", type=str, required=True,
-                        help='data generation yaml file needed ')
+                        help="Path to the YAML configuration file for training")
+
+    # Optional: Directory for saving or loading model checkpoints
     parser.add_argument('--model_dir', default='',
-                        help='Continued training path')
+                        help="Directory to load/save the model checkpoint")
+
+    # Optional: Enable mixed-precision training (half-precision)
     parser.add_argument("--half", action='store_true',
-                        help="whether train with half precision.")
+                        help="Use half-precision training to reduce memory consumption")
+
+    # Optional: Distributed training initialization URL (default uses environment variable)
     parser.add_argument('--dist_url', default='env://',
-                        help='url used to set up distributed training')
+                        help="URL for initializing distributed training")
+
+    # Parse and return the command-line arguments
     opt = parser.parse_args()
+    print(f"-----------------Command Line Arguments Summary------------------\n{opt}")
     return opt
+
 
 
 def main():
     opt = train_parser()
+
+    print("-----------------Yaml file Reading------------------")
     hypes = yaml_utils.load_yaml(opt.hypes_yaml, opt)
-
+    
+    print('-----------------Multi GPU Checking------------------',end="\n")
     multi_gpu_utils.init_distributed_mode(opt)
-
+    opencood_train_dataset = build_dataset(dataset_cfg=hypes, visualize=False, train=True)
     print('-----------------Dataset Building------------------')
-    opencood_train_dataset = build_dataset(hypes, visualize=False, train=True)
-    opencood_validate_dataset = build_dataset(hypes, visualize=False, train=False)
-
+    opencood_train_dataset = build_dataset(dataset_cfg=hypes, visualize=False, train=True)
+   
+    opencood_validate_dataset = build_dataset(dataset_cfg=hypes, visualize=False, train=False)
     if opt.distributed:
+        print('-----------------DataLoader Creating------------------')
+        print('Since Distributed training environment detected. Initializing DistributedSampler for data parallelization is done.')
         sampler_train = DistributedSampler(opencood_train_dataset)
         sampler_val = DistributedSampler(opencood_validate_dataset,
                                          shuffle=False)
@@ -53,24 +85,26 @@ def main():
 
         train_loader = DataLoader(opencood_train_dataset,
                                   batch_sampler=batch_sampler_train,
-                                  num_workers=8,
+                                  num_workers=0, # These were 8, due to error I set them to 0
                                   collate_fn=opencood_train_dataset.collate_batch_train)
         val_loader = DataLoader(opencood_validate_dataset,
                                 sampler=sampler_val,
-                                num_workers=8,
+                                num_workers=0,
                                 collate_fn=opencood_train_dataset.collate_batch_train,
                                 drop_last=False)
     else:
+        print('-----------------DataLoader Creating------------------')
+        print('Since Distributed training environment not detected. Initializing DataLoader for data parallelization is done.')
         train_loader = DataLoader(opencood_train_dataset,
                                   batch_size=hypes['train_params']['batch_size'],
-                                  num_workers=8,
+                                  num_workers=0,
                                   collate_fn=opencood_train_dataset.collate_batch_train,
                                   shuffle=True,
                                   pin_memory=False,
                                   drop_last=True)
         val_loader = DataLoader(opencood_validate_dataset,
                                 batch_size=hypes['train_params']['batch_size'],
-                                num_workers=8,
+                                num_workers=0,
                                 collate_fn=opencood_train_dataset.collate_batch_train,
                                 shuffle=False,
                                 pin_memory=False,
@@ -79,9 +113,10 @@ def main():
     print('---------------Creating Model------------------')
     model = train_utils.create_model(hypes)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+    print(f'Model will run ({device}) device.')
     # if we want to train from last checkpoint.
     if opt.model_dir:
+        print(f'Model directory {opt.model_dir} detected. Initializing model from saved checkpoint.')
         saved_path = opt.model_dir
         init_epoch, model = train_utils.load_saved_model(saved_path,
                                                          model)
@@ -105,9 +140,11 @@ def main():
         model_without_ddp = model.module
 
     # define the loss
+    print('---------------Creating Loss Function------------------')
     criterion = train_utils.create_loss(hypes)
 
     # optimizer setup
+    print('---------------Creating Optimizer------------------')
     optimizer = train_utils.setup_optimizer(hypes, model_without_ddp)
     # lr scheduler setup
     num_steps = len(train_loader)
@@ -120,7 +157,7 @@ def main():
     if opt.half:
         scaler = torch.cuda.amp.GradScaler()
 
-    print('Training start')
+    print('---------------Training start---------------------')
     epoches = hypes['train_params']['epoches']
     # used to help schedule learning rate
 

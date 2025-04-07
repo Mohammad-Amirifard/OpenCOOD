@@ -17,7 +17,7 @@ def pcd_to_np(pcd_file):
 
     Parameters
     ----------
-    pcd_file : str
+    pcd_file : str(pcd direction is needed.)
         The pcd file that contains the point cloud.
 
     Returns
@@ -25,7 +25,8 @@ def pcd_to_np(pcd_file):
     pcd : o3d.PointCloud
         PointCloud object, used for visualization
     pcd_np : np.ndarray
-        The lidar data in numpy format, shape:(n, 4)
+        The lidar data in numpy format, shape:(n, 4) 
+        4 stands for [x,y,z,r]--> I am not sure about (r)
 
     """
     pcd = o3d.io.read_point_cloud(pcd_file)
@@ -39,8 +40,11 @@ def pcd_to_np(pcd_file):
 
 
 def mask_points_by_range(points, limit_range):
+
     """
     Remove the lidar points out of the boundary.
+    We had Cav_lida_range: Limit_range: [-140.8, -40, -3, 140.8, 40, 1]. It means we are looking for points which their x is in [-140.8 +140.8],
+    their y is in [-40 +40] and their z is in [-3 1]
 
     Parameters
     ----------
@@ -81,8 +85,10 @@ def mask_ego_points(points):
     points : np.ndarray
         Filtered lidar points.
     """
+    #todo: From where do we have these values? Do we imagine a length for the car and how??
     mask = (points[:, 0] >= -1.95) & (points[:, 0] <= 2.95) \
            & (points[:, 1] >= -1.1) & (points[:, 1] <= 1.1)
+    print(mask)
     points = points[np.logical_not(mask)]
 
     return points
@@ -113,9 +119,20 @@ def lidar_project(lidar_data, extrinsic):
         Projected lida data, shape: (n, 4)
     """
 
+    #We don't consider the last dimension.
     lidar_xyz = lidar_data[:, :3].T
     # (3, n) -> (4, n), homogeneous transformation
+
+    # Add a row of 1 to the end of matrix
+    
     lidar_xyz = np.r_[lidar_xyz, [np.ones(lidar_xyz.shape[1])]]
+    # Ex: Original lidar_xyz: [[1. 2. 3.]
+    #                          [4. 5. 6.]
+    #                          [7. 8. 9.]]
+    # Ex: Updated lidar_xyz: [[1. 2. 3.]
+    #                          [4. 5. 6.]
+    #                          [7. 8. 9.]
+    #                          [1. 1. 1.]]
     lidar_int = lidar_data[:, 3]
 
     # transform to ego vehicle space, (3, n)
@@ -158,6 +175,7 @@ def downsample_lidar(pcd_np, num):
     ----------
     pcd_np : np.ndarray
         The lidar points, (n, 4).
+        assert pcd_np.shape[0] >= num
 
     num : int
         The downsample target number.
@@ -179,7 +197,7 @@ def downsample_lidar(pcd_np, num):
 
 def downsample_lidar_minimum(pcd_np_list):
     """
-    Given a list of pcd, find the minimum number and downsample all
+    Given a list of pcd_np, find the minimum number and downsample all
     point clouds to the minimum number.
 
     Parameters

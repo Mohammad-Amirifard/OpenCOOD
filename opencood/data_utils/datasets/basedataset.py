@@ -14,11 +14,12 @@ import torch
 import numpy as np
 from torch.utils.data import Dataset
 
-import opencood.utils.pcd_utils as pcd_utils
-from opencood.data_utils.augmentor.data_augmentor import DataAugmentor
-from opencood.hypes_yaml.yaml_utils import load_yaml
-from opencood.utils.pcd_utils import downsample_lidar_minimum
-from opencood.utils.transformation_utils import x1_to_x2
+import opencood.utils.pcd_utils as pcd_utils # Comments added
+from opencood.utils.pcd_utils import downsample_lidar_minimum # Comments Added
+from opencood.utils.transformation_utils import x1_to_x2 # Comments Added
+from opencood.data_utils.augmentor.data_augmentor import DataAugmentor # Comments Added
+from opencood.hypes_yaml.yaml_utils import load_yaml # Comments Added
+
 
 
 class BaseDataset(Dataset):
@@ -64,10 +65,11 @@ class BaseDataset(Dataset):
 
         self.pre_processor = None
         self.post_processor = None
-        self.data_augmentor = DataAugmentor(params['data_augment'],
-                                            train)
+        self.data_augmentor = DataAugmentor(augment_config=params['data_augment'],
+                                            train=train)
 
         # if the training/testing include noisy setting
+        #Todo: Do we have wild_setting in the yaml file?
         if 'wild_setting' in params:
             self.seed = params['wild_setting']['seed']
             # whether to add time delay
@@ -101,6 +103,7 @@ class BaseDataset(Dataset):
             self.xyz_noise_std = 0
             self.ryp_noise_std = 0
             self.data_size = 0  # Mb (Megabits)
+            #Todo: From where we have these detail?
             self.transmission_speed = 27  # Mbps
             self.backbone_delay = 0  # ms
 
@@ -115,7 +118,7 @@ class BaseDataset(Dataset):
         else:
             self.max_cav = params['train_params']['max_cav']
 
-        # first load all paths of different scenarios
+        # first load all paths of different scenarios. Somthing like 'Dataset\\train\\2021_08_16_22_26_54' or 'Dataset\\train\\2021_08_18_09_02_56'
         scenario_folders = sorted([os.path.join(root_dir, x)
                                    for x in os.listdir(root_dir) if
                                    os.path.isdir(os.path.join(root_dir, x))])
@@ -143,7 +146,7 @@ class BaseDataset(Dataset):
             # loop over all CAV data
             for (j, cav_id) in enumerate(cav_list):
                 if j > self.max_cav - 1:
-                    print('too many cavs')
+                    print(f'Found too many cavs')
                     break
                 self.scenario_database[i][cav_id] = OrderedDict()
 
@@ -171,6 +174,7 @@ class BaseDataset(Dataset):
                         yaml_file
                     self.scenario_database[i][cav_id][timestamp]['lidar'] = \
                         lidar_file
+                    # Here camera0 inlcude all 4 camera images.
                     self.scenario_database[i][cav_id][timestamp]['camera0'] = \
                         camera_files
                 # Assume all cavs will have the same timestamps length. Thus
@@ -187,6 +191,11 @@ class BaseDataset(Dataset):
                 else:
                     self.scenario_database[i][cav_id]['ego'] = False
 
+        # At the end we have a dictionary called scenario_database-->[scenario_index][cav_id][timestamp/ego][yaml_file_dir/lidar_file_dir/camera0_file_dir].                       
+        # print(self.scenario_database[0]['641']['000837']['yaml']) -->output: Dataset\train\2021_08_16_22_26_54\641\000837.yaml
+        # print(self.len_record) -->Is the cummulative number of timestaps--> [419, 493, 572, 694, 936, 1203,...]. E.G: 419 is the number of timestamp in scenario_index=0
+
+
     def __len__(self):
         return self.len_record[-1]
 
@@ -195,7 +204,8 @@ class BaseDataset(Dataset):
         Abstract method, needs to be define by the children class.
         """
         pass
-
+    
+        
     def retrieve_base_data(self, idx, cur_ego_pose_flag=True):
         """
         Given the index, return the corresponding data.
@@ -214,11 +224,16 @@ class BaseDataset(Dataset):
         Returns
         -------
         data : dict
-            The dictionary contains loaded yaml params and lidar data for
+            The dictionary contains loaded yaml, 
+            params and lidar data for
             each cav.
         """
         # we loop the accumulated length list to see get the scenario index
         scenario_index = 0
+        
+        # We hace len_record = [419, 493,572,....]
+        # For exmaple: if idx = 410 -->scenario_index =0
+        # If idx=430-->scenario_index = 1
         for i, ele in enumerate(self.len_record):
             if idx < ele:
                 scenario_index = i
@@ -265,7 +280,7 @@ class BaseDataset(Dataset):
     @staticmethod
     def extract_timestamps(yaml_files):
         """
-        Given the list of the yaml files, extract the mocked timestamps.
+        Given the list of the yaml files, extract the mocked timestamps writen at the end of string.
 
         Parameters
         ----------
@@ -280,8 +295,7 @@ class BaseDataset(Dataset):
         timestamps = []
 
         for file in yaml_files:
-            res = file.split('/')[-1]
-
+            res = file.split("\\")[-1]  # Use forward slash for splitting
             timestamp = res.replace('.yaml', '')
             timestamps.append(timestamp)
 
@@ -433,7 +447,6 @@ class BaseDataset(Dataset):
 
         cur_ego_params = load_yaml(ego_content[timestamp_cur]['yaml'])
         delay_ego_params = load_yaml(ego_content[timestamp_delay]['yaml'])
-
         # we need to calculate the transformation matrix from cav to ego
         # at the delayed timestamp
         delay_cav_lidar_pose = delay_params['lidar_pose']
@@ -617,3 +630,9 @@ class BaseDataset(Dataset):
                                       show_vis,
                                       save_path,
                                       dataset=dataset)
+
+
+
+
+
+

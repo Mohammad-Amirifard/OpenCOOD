@@ -26,9 +26,15 @@ class VoxelPostprocessor(BasePostprocessor):
         self.anchor_num = self.params['anchor_args']['num']
 
     def generate_anchor_box(self):
+        """
+        Uses parameters defined in yaml file and create anchor boxes
+        Retrun:
+            anchors: a stack of [cx, cy, cz, h, w, l, r_]
+        """
         W = self.params['anchor_args']['W']
         H = self.params['anchor_args']['H']
 
+        # These are parameters for defining anchor boxes.
         l = self.params['anchor_args']['l']
         w = self.params['anchor_args']['w']
         h = self.params['anchor_args']['h']
@@ -82,7 +88,8 @@ class VoxelPostprocessor(BasePostprocessor):
         Parameters
         ----------
         argv : list
-            gt_box_center:(max_num, 7), anchor:(H, W, anchor_num, 7)
+            gt_box_center:(max_num, 7),
+            anchor:(H, W, anchor_num, 7)
 
         Returns
         -------

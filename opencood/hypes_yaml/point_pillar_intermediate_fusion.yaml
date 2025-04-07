@@ -40,6 +40,7 @@ postprocess:
   core_method: 'VoxelPostprocessor' # VoxelPostprocessor, BevPostprocessor supported
   anchor_args:
     cav_lidar_range: *cav_lidar
+    # The following parms [l,w,h,r,pos_threshold,neg_threshold] are for anchor box, shwon in Voxel-Net Paper and Piont-Pillar paper
     l: 3.9
     w: 1.6
     h: 1.56
@@ -52,7 +53,7 @@ postprocess:
     score_threshold: 0.20
   order: 'hwl' # hwl or lwh
   max_num: 100 # maximum number of objects in a single frame. use this number to make sure different frames has the same dimension in the same batch
-  nms_thresh: 0.15
+  nms_thresh: 0.15 # Non-Maximum Suppression
 
 # model related
 model:

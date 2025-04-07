@@ -1,15 +1,15 @@
 name: point_pillar_intermediate_V2VAM_nocompressionV2
 sub_name: 
-root_dir: "opv2v_data_dumping/train"
-validate_dir: "opv2v_data_dumping/validate"
+root_dir: "training_data/train" # Please add your directory here for the dataset.
+validate_dir: "validating_data/validate"
 
-yaml_parser: "load_point_pillar_params"
+yaml_parser: "load_point_pillar_params" # Name of the parser
 train_params:
-  batch_size: &batch_size 4
-  epoches: 60
+  batch_size: &batch_size 2 # Batch size 2 and 4 for val and testing. Written in Point-Pillar paper
+  epoches: 60  # 160 and 320. Written in Point-Pillar paper
   eval_freq: 1
   save_freq: 1
-  max_cav: &max_cav 5
+  max_cav: &max_cav 5 # Written  in V2VAM paper
 
 fusion:
   core_method: 'IntermediateFusionDataset' # LateFusionDataset, EarlyFusionDataset, IntermediateFusionDataset supported
@@ -20,8 +20,8 @@ preprocess:
   # options: BasePreprocessor, VoxelPreprocessor, BevPreprocessor
   core_method: 'SpVoxelPreprocessor'
   args:
-    voxel_size: &voxel_size [0.4, 0.4, 4]
-    max_points_per_voxel: 32
+    voxel_size: &voxel_size [0.4, 0.4, 4] # Writen in V2VAM paper
+    max_points_per_voxel: 32 # Maximum number of randomly selected points per non-empty voxels. In the Voxel-Net this number is 35 not 32
     max_voxel_train: 32000
     max_voxel_test: 70000
   # lidar range for each individual cav.
@@ -42,20 +42,21 @@ postprocess:
   core_method: 'VoxelPostprocessor' # VoxelPostprocessor, BevPostprocessor supported
   anchor_args:
     cav_lidar_range: *cav_lidar
+    # The following parms [l,w,h,r,pos_threshold,neg_threshold] are for anchor box, shwon in Voxel-Net Paper and Piont-Pillar paper
+    # The following args for defining the pre-defined anchor boxes.
     l: 3.9
     w: 1.6
     h: 1.56
     r: [0, 90]
     feature_stride: 4
-    num: &achor_num 2
+    num: &achor_num 2 # We define two anchor to consider both 0 and 90 degree
   target_args:
     pos_threshold: 0.6
     neg_threshold: 0.45
     score_threshold: 0.20
-  order: 'hwl' # hwl or lwh
-  max_num: 100 # maximum number of objects in a single frame. use this number to make sure different frames has the same dimension in the same batch
-  nms_thresh: 0.15
-
+  order: 'hwl' # hwl or lwh : refer to the order in which the dimensions of the bounding box are specified
+  max_num: 100  # maximum number of objects in a single frame. use this number to make sure different frames has the same dimension in the same batch
+  nms_thresh: 0.15 # Non-Maximum Suppression
 # model related
 model:
   core_method: point_pillar_intermediate_V2VAM

@@ -15,7 +15,17 @@ from opencood.data_utils.pre_processor.base_preprocessor import \
 
 
 class SpVoxelPreprocessor(BasePreprocessor):
+    """
+    Convert raw point cloud data into a voxel grid representation.
+    his involves dividing the 3D space into a grid of cubes (voxels)
+    and assigning point cloud data to these voxels based on their spatial locations
+
+    """
+
     def __init__(self, preprocess_params, train):
+        """
+        Initialize a voxel_generator, creating voxels from points
+        """
         super(SpVoxelPreprocessor, self).__init__(preprocess_params,
                                                   train)
         self.spconv = 1
@@ -26,8 +36,9 @@ class SpVoxelPreprocessor(BasePreprocessor):
             # spconv v2.x
             from spconv.utils import Point2VoxelCPU3d as VoxelGenerator
             self.spconv = 2
-        self.lidar_range = self.params['cav_lidar_range']
-        self.voxel_size = self.params['args']['voxel_size']
+            
+        self.lidar_range = self.params['cav_lidar_range']   #[-140.8, -40, -3, 140.8, 40, 1]
+        self.voxel_size = self.params['args']['voxel_size'] # [0.4, 0.4, 4]
         self.max_points_per_voxel = self.params['args']['max_points_per_voxel']
 
         if train:
@@ -37,6 +48,7 @@ class SpVoxelPreprocessor(BasePreprocessor):
 
         grid_size = (np.array(self.lidar_range[3:6]) -
                      np.array(self.lidar_range[0:3])) / np.array(self.voxel_size)
+        #grid_size-->[704,200,1]
         self.grid_size = np.round(grid_size).astype(np.int64)
 
         # use sparse conv library to generate voxel
@@ -57,6 +69,13 @@ class SpVoxelPreprocessor(BasePreprocessor):
             )
 
     def preprocess(self, pcd_np):
+        """
+        Args:
+            pcd_np: pcd pints which is a np.array (N,4). N= number of pints
+        Return:
+            data_dict: inlcudes voxel_features with shape(M,32,4), voxel_coords(M,3) and voxel_num_points(M,). M = number of Voxels
+        
+        """
         data_dict = {}
         if self.spconv == 1:
             voxel_output = self.voxel_generator.generate(pcd_np)
@@ -108,14 +127,19 @@ class SpVoxelPreprocessor(BasePreprocessor):
         """
         Customized pytorch data loader collate function.
 
-        Parameters
-        ----------
-        batch : list
-            List of dictionary. Each dictionary represent a single frame.
+        Args:
+            batch : list
+            This a List of dictionary. Each dictionary represent a single frame.
+            Each dictionary has 3 keys: voxel_features,voxel_num_points,voxel_coords
 
-        Returns
-        -------
-        processed_batch : dict
+        Returns:
+            a dictionary which is 
+                                {
+                                     'voxel_features': voxel_features, # This voxel_features is a concatentae of voxel_features of all batch item
+                                     'voxel_coords': voxel_coords,     # The same
+                                     'voxel_num_points': voxel_num_points # The same
+                                }
+
             Updated lidar batch.
         """
         voxel_features = []
@@ -148,10 +172,13 @@ class SpVoxelPreprocessor(BasePreprocessor):
         ----------
         batch : dict
 
-        Returns
-        -------
-        processed_batch : dict
-            Updated lidar batch.
+        Returns:
+            a dictionary which is 
+                                {
+                                     'voxel_features': voxel_features, # This voxel_features is a concatentae of voxel_features of all batch item
+                                     'voxel_coords': voxel_coords,     # The same
+                                     'voxel_num_points': voxel_num_points # The same
+                                }
         """
         voxel_features = \
             torch.from_numpy(np.concatenate(batch['voxel_features']))

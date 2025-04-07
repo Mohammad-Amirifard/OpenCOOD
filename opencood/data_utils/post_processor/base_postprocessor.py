@@ -31,6 +31,10 @@ class BasePostprocessor(object):
     """
 
     def __init__(self, anchor_params, train=True):
+        """
+        Args: 
+            anchor_params: is  equale to params['postprocess']
+        """
         self.params = anchor_params
         self.bbx_dict = {}
         self.train = train
@@ -55,8 +59,9 @@ class BasePostprocessor(object):
         -------
         gt_box3d_tensor : torch.Tensor
             The groundtruth bounding box tensor, shape (N, 8, 3).
+            We have 8 corners of an object.
         """
-        gt_box3d_list = []
+        gt_box3d_list = [] # Will include projected_object_bbx_corner for different cav_id
         # used to avoid repetitive bounding box
         object_id_list = []
 
@@ -69,10 +74,11 @@ class BasePostprocessor(object):
             object_ids = cav_content['object_ids']
             object_bbx_center = object_bbx_center[object_bbx_mask == 1]
 
-            # convert center to corner
+            # convert center to corner wiht shape (N,8,3)
             object_bbx_corner = \
                 box_utils.boxes_to_corners_3d(object_bbx_center,
                                               self.params['order'])
+            # Now we need to project these object_bbx_corner
             projected_object_bbx_corner = \
                 box_utils.project_box3d(object_bbx_corner.float(),
                                         transformation_matrix)
@@ -82,8 +88,10 @@ class BasePostprocessor(object):
             object_id_list += object_ids
 
         # gt bbx 3d
+        # Concatanate vertically
         gt_box3d_list = torch.vstack(gt_box3d_list)
-        # some of the bbx may be repetitive, use the id list to filter
+
+        # some of the bbx may be repetitive, use the id list to filter the
         gt_box3d_selected_indices = \
             [object_id_list.index(x) for x in set(object_id_list)]
         gt_box3d_tensor = gt_box3d_list[gt_box3d_selected_indices]
@@ -107,7 +115,7 @@ class BasePostprocessor(object):
         cav_contents : list
             List of dictionary, save all cavs' information.
 
-        reference_lidar_pose : list
+        reference_lidar_pose :lidar pose under world coordinate, [x, y, z, roll, yaw, pitch]
             The final target lidar pose with length 6.
 
         Returns
@@ -121,20 +129,22 @@ class BasePostprocessor(object):
         """
         from opencood.data_utils.datasets import GT_RANGE
 
-        tmp_object_dict = {}
+        tmp_object_dict = {} # It will be filled like this {'object_id':'object_content}}
         for cav_content in cav_contents:
             tmp_object_dict.update(cav_content['params']['vehicles'])
 
-        output_dict = {}
+        output_dict = {} # It will be filled like this: {'object id', '(xyzlwhyaw)'}
         filter_range = self.params['anchor_args']['cav_lidar_range'] \
             if self.train else GT_RANGE
 
+        #self.params['order'] can be 'lwh' or 'hwl'
         box_utils.project_world_objects(tmp_object_dict,
                                         output_dict,
                                         reference_lidar_pose,
                                         filter_range,
                                         self.params['order'])
-
+        #After running the above code, output_dict will be updated and have new coords points
+        
         object_np = np.zeros((self.params['max_num'], 7))
         mask = np.zeros(self.params['max_num'])
         object_ids = []

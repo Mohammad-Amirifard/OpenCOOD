@@ -167,6 +167,7 @@ def create_loss(hypes):
                                                        target_loss_name))
         exit(0)
 
+    print(f"Loss function: [{loss_func_name}] was created for this model.")
     criterion = loss_func(loss_func_config)
     return criterion
 
