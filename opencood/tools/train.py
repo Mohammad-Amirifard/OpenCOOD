@@ -8,7 +8,7 @@
 import argparse
 import os
 import statistics
-
+import json
 import torch
 import tqdm
 from tensorboardX import SummaryWriter
@@ -65,8 +65,9 @@ def train_parser():
     return opt
 
 
-
+ 
 def main():
+    num_workers = 0
     opt = train_parser()
 
     print("*********************Step1: Yaml file Reading*********************")
@@ -91,11 +92,11 @@ def main():
 
         train_loader = DataLoader(opencood_train_dataset,
                                   batch_sampler=batch_sampler_train,
-                                  num_workers=0, # These were 8, due to error I set them to 0
+                                  num_workers=num_workers, # These were 8, due to error I set them to 0
                                   collate_fn=opencood_train_dataset.collate_batch_train)
         val_loader = DataLoader(opencood_validate_dataset,
                                 sampler=sampler_val,
-                                num_workers=0,
+                                num_workers=num_workers,
                                 collate_fn=opencood_train_dataset.collate_batch_train,
                                 drop_last=False)
     else:
@@ -103,14 +104,14 @@ def main():
         print('Since Distributed training environment not detected. Initializing DataLoader for data parallelization is done.')
         train_loader = DataLoader(opencood_train_dataset,
                                   batch_size=hypes['train_params']['batch_size'],
-                                  num_workers=0,
+                                  num_workers=num_workers,
                                   collate_fn=opencood_train_dataset.collate_batch_train,
                                   shuffle=True,
                                   pin_memory=False,
                                   drop_last=True)
         val_loader = DataLoader(opencood_validate_dataset,
                                 batch_size=hypes['train_params']['batch_size'],
-                                num_workers=0,
+                                num_workers=num_workers,
                                 collate_fn=opencood_train_dataset.collate_batch_train,
                                 shuffle=False,
                                 pin_memory=False,
@@ -192,6 +193,7 @@ def main():
         
 
         index =0
+        
         for batch_data in train_loader:
 
             # the model will be evaluation mode during validation
