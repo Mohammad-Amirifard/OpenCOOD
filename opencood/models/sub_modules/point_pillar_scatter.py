@@ -9,7 +9,9 @@ import torch.nn as nn
 """
 
 class PointPillarScatter(nn.Module):
-
+    """
+    Stacking.
+    """
     #// Step1: Initialization
     def __init__(self, model_cfg):
         super().__init__()
@@ -57,6 +59,5 @@ class PointPillarScatter(nn.Module):
             batch_spatial_features.view(batch_size, self.num_bev_features *
                                         self.nz, self.ny, self.nx)
         batch_dict['spatial_features'] = batch_spatial_features
-
         return batch_dict
 

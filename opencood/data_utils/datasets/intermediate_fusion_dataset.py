@@ -184,7 +184,9 @@ class IntermediateFusionDataset(basedataset.BaseDataset):
             processed_data_dict['ego'].update({'origin_lidar':
                 np.vstack(
                     projected_lidar_stack)})
-        print(processed_data_dict)
+        
+        
+        #print(processed_data_dict)
         return processed_data_dict
 
     def get_item_single_car(self, selected_cav_base, ego_pose):
@@ -277,7 +279,7 @@ class IntermediateFusionDataset(basedataset.BaseDataset):
     def collate_batch_train(self, batch):
         # Intermediate fusion is different the other two
         output_dict = {'ego': {}}
-
+        
         object_bbx_center = []
         object_bbx_mask = []
         object_ids = []

@@ -132,6 +132,7 @@ def create_model(hypes):
                                                        target_model_name))
         exit(0)
     instance = model(backbone_config)
+    
     return instance
 
 

@@ -31,8 +31,9 @@ class VoxelPostprocessor(BasePostprocessor):
         Retrun:
             anchors: a stack of [cx, cy, cz, h, w, l, r_]
         """
-        W = self.params['anchor_args']['W']
-        H = self.params['anchor_args']['H']
+        # if Grid = [704,200,1]
+        W = self.params['anchor_args']['W'] # 704
+        H = self.params['anchor_args']['H'] # 200
 
         # These are parameters for defining anchor boxes.
         l = self.params['anchor_args']['l']

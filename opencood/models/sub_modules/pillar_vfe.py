@@ -33,6 +33,7 @@ class PFNLayer(nn.Module):
 
         #? Set maximu size of batch to 50,000
         self.part = 50000
+        print("self.part set to:",self.part)
 
     def forward(self, inputs):
         """
@@ -58,7 +59,7 @@ class PFNLayer(nn.Module):
         else:
             x = self.linear(inputs)
         torch.backends.cudnn.enabled = False
-
+        
         #// Step2: Run Batch-Norm on it
         x = self.norm(x.permute(0, 2, 1)).permute(0, 2,
                                                   1) if self.use_norm else x
@@ -83,6 +84,7 @@ class PillarVFE(nn.Module):
                  point_cloud_range):
         super().__init__()
         
+        # num_point_features = 4
         #// Step1: Read parameters specified in the model_cfg config
         self.model_cfg = model_cfg
         self.use_norm = self.model_cfg['use_norm']
@@ -93,21 +95,24 @@ class PillarVFE(nn.Module):
         #! xyz are the direction of a point.
         #! In the base article we are working, use_absolute_xyz is 3
         num_point_features += 6 if self.use_absolute_xyz else 3
+        # print(num_point_features) -->4+6 = 10
         if self.with_distance:
             num_point_features += 1
-
+            
         #! number of filters is [64] and num_point_features is X+3. So num_filters=[64,X+3]
         assert len(self.num_filters) > 0
         num_filters = [num_point_features] + list(self.num_filters)
-
+        print('Num_filters which is used for pillar VFE is:',num_filters)
+        # num_filters = [10, 64]
         
         #// Step2: RunPFN class for different in and out filters
         pfn_layers = []
         for i in range(len(num_filters) - 1):
             in_filters = num_filters[i]
             out_filters = num_filters[i + 1]
+
             pfn_layers.append(
-                PFNLayer(in_filters, out_filters, self.use_norm,
+                PFNLayer(in_channels=in_filters, out_channels=out_filters, use_norm=self.use_norm,
                          last_layer=(i >= len(num_filters) - 2))
             )
         self.pfn_layers = nn.ModuleList(pfn_layers)
@@ -212,4 +217,5 @@ class PillarVFE(nn.Module):
 
 
         batch_dict['pillar_features'] = features
+    
         return batch_dict

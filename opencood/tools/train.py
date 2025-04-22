@@ -3,6 +3,8 @@
 # License: TDG-Attribution-NonCommercial-NoDistrib
 
 
+
+
 import argparse
 import os
 import statistics
@@ -11,16 +13,21 @@ import torch
 import tqdm
 from tensorboardX import SummaryWriter
 from torch.utils.data import DataLoader, DistributedSampler
-
 import opencood.hypes_yaml.yaml_utils as yaml_utils
 from opencood.tools import train_utils
 from opencood.tools import multi_gpu_utils
 from opencood.data_utils.datasets import build_dataset
 from opencood.tools import train_utils
+import warnings
+warnings.filterwarnings("ignore")
+
+from torchviz import make_dot
 
 
 def train_parser():
+
     
+
     """
     Initializes and returns a command-line argument parser for the training process.
 
@@ -55,7 +62,6 @@ def train_parser():
 
     # Parse and return the command-line arguments
     opt = parser.parse_args()
-    print(f"-----------------Command Line Arguments Summary------------------\n{opt}")
     return opt
 
 
@@ -63,18 +69,18 @@ def train_parser():
 def main():
     opt = train_parser()
 
-    print("-----------------Yaml file Reading------------------")
+    print("*********************Step1: Yaml file Reading*********************")
     hypes = yaml_utils.load_yaml(opt.hypes_yaml, opt)
     
-    print('-----------------Multi GPU Checking------------------',end="\n")
+    print('*********************Step2: Multi GPU Checking*********************',end="\n")
     multi_gpu_utils.init_distributed_mode(opt)
+    
+    print('*********************Step3: Train and Validate Dataset Building*********************')
     opencood_train_dataset = build_dataset(dataset_cfg=hypes, visualize=False, train=True)
-    print('-----------------Dataset Building------------------')
-    opencood_train_dataset = build_dataset(dataset_cfg=hypes, visualize=False, train=True)
-   
     opencood_validate_dataset = build_dataset(dataset_cfg=hypes, visualize=False, train=False)
+    
     if opt.distributed:
-        print('-----------------DataLoader Creating------------------')
+        print('*********************Step4: DataLoader Creating*********************')
         print('Since Distributed training environment detected. Initializing DistributedSampler for data parallelization is done.')
         sampler_train = DistributedSampler(opencood_train_dataset)
         sampler_val = DistributedSampler(opencood_validate_dataset,
@@ -93,7 +99,7 @@ def main():
                                 collate_fn=opencood_train_dataset.collate_batch_train,
                                 drop_last=False)
     else:
-        print('-----------------DataLoader Creating------------------')
+        print('*********************Step4: DataLoader Creating*********************')
         print('Since Distributed training environment not detected. Initializing DataLoader for data parallelization is done.')
         train_loader = DataLoader(opencood_train_dataset,
                                   batch_size=hypes['train_params']['batch_size'],
@@ -110,8 +116,9 @@ def main():
                                 pin_memory=False,
                                 drop_last=True)
 
-    print('---------------Creating Model------------------')
+    print('*********************Step5: Creating Model*********************')
     model = train_utils.create_model(hypes)
+    
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f'Model will run ({device}) device.')
     # if we want to train from last checkpoint.
@@ -140,11 +147,11 @@ def main():
         model_without_ddp = model.module
 
     # define the loss
-    print('---------------Creating Loss Function------------------')
+    print('*********************Step6: Creating Loss Function*********************')
     criterion = train_utils.create_loss(hypes)
 
     # optimizer setup
-    print('---------------Creating Optimizer------------------')
+    print('*********************Step7: Creating Optimizer*********************')
     optimizer = train_utils.setup_optimizer(hypes, model_without_ddp)
     # lr scheduler setup
     num_steps = len(train_loader)
@@ -157,24 +164,36 @@ def main():
     if opt.half:
         scaler = torch.cuda.amp.GradScaler()
 
-    print('---------------Training start---------------------')
+    print('*********************Step8: Starting Training part*********************')
     epoches = hypes['train_params']['epoches']
+    batch_size = hypes['train_params']['batch_size']
     # used to help schedule learning rate
-
+    print(f"Batch_size = {batch_size}")
+    print(f"Number of epochs = {epoches}")
+    print(f"Number of batch_Data to analyse in each epoch = {len(train_loader)}")
     for epoch in range(init_epoch, max(epoches, init_epoch)):
+        
         if hypes['lr_scheduler']['core_method'] != 'cosineannealwarm':
             scheduler.step(epoch)
         if hypes['lr_scheduler']['core_method'] == 'cosineannealwarm':
             scheduler.step_update(epoch * num_steps + 0)
         for param_group in optimizer.param_groups:
-            print('learning rate %.7f' % param_group["lr"])
-
+            print('-'*25)
+            print()
+            print(f"For Epoch {epoch}:")
+            print('learning rate is %.7f ' % param_group["lr"])
+            print(' || ')
+            print(" || ")
+            print(' ** ')
         if opt.distributed:
             sampler_train.set_epoch(epoch)
 
         pbar2 = tqdm.tqdm(total=len(train_loader), leave=True)
+        
 
-        for i, batch_data in enumerate(train_loader):
+        index =0
+        for batch_data in train_loader:
+
             # the model will be evaluation mode during validation
             model.train()
             model.zero_grad()
@@ -197,11 +216,13 @@ def main():
             else:
                 with torch.cuda.amp.autocast():
                     ouput_dict = model(batch_data['ego'])
+                    if epoch == 0:
+                        make_dot(ouput_dict, params=dict(model.named_parameters())).render("model_graph", format="png")
                     final_loss = criterion(ouput_dict,
                                            batch_data['ego']['label_dict'])
 
 
-            criterion.logging(epoch, i, len(train_loader), writer, pbar=pbar2)
+            criterion.logging(epoch, index, len(train_loader), writer, pbar=pbar2)
             pbar2.update(1)
 
             if not opt.half:
@@ -213,7 +234,9 @@ def main():
                 scaler.update()
 
             if hypes['lr_scheduler']['core_method'] == 'cosineannealwarm':
-                scheduler.step_update(epoch * num_steps + i)
+                scheduler.step_update(epoch * num_steps + index)
+            
+            index +=1
 
         if epoch % hypes['train_params']['save_freq'] == 0:
             torch.save(model_without_ddp.state_dict(),

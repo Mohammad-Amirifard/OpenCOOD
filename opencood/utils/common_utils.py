@@ -18,7 +18,7 @@ def check_numpy_to_torch(x):
     return x, False
 
 
-def check_contain_nan(x):
+#def check_contain_nan(x):
     if isinstance(x, dict):
         return any(check_contain_nan(v) for k, v in x.items())
     if isinstance(x, list):
@@ -82,7 +82,8 @@ def rotate_points_along_z_2d(points, angle):
     return points_rot.numpy() if is_numpy else points_rot
 
 
-def remove_ego_from_objects(objects, ego_id):
+
+#def remove_ego_from_objects(objects, ego_id):
     """
     Avoid adding ego vehicle to the object dictionary.
 
@@ -98,7 +99,7 @@ def remove_ego_from_objects(objects, ego_id):
         del objects[ego_id]
 
 
-def retrieve_ego_id(base_data_dict):
+#def retrieve_ego_id(base_data_dict):
     """
     Retrieve the ego vehicle id from sample(origin format).
 

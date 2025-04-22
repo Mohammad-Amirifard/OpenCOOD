@@ -49,7 +49,7 @@ class SpVoxelPreprocessor(BasePreprocessor):
         grid_size = (np.array(self.lidar_range[3:6]) -
                      np.array(self.lidar_range[0:3])) / np.array(self.voxel_size)
         #grid_size-->[704,200,1]
-        self.grid_size = np.round(grid_size).astype(np.int64)
+        self.grid_size = np.round(grid_size).astype(np.int64) # Remove float
 
         # use sparse conv library to generate voxel
         if self.spconv == 1:

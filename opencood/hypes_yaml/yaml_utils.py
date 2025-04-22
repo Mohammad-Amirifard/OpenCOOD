@@ -59,12 +59,12 @@ def load_yaml(file, opt=None):
     if "yaml_parser" in param:
         param = eval(param["yaml_parser"])(param)
         
-    print(f'Configuration parameters from {opt.hypes_yaml} have been successfully loaded.')
+    #print(f'Configuration parameters have been successfully loaded.')
     return param
 
 
 
-def load_voxel_params(param):
+# def load_voxel_params(param):
     """
     Based on the lidar range and resolution of voxel, calcuate the anchor box
     and target resolution. It means we create voxels/grids on the cav_lidar_range.
@@ -155,7 +155,7 @@ def load_point_pillar_params(param):
     return param
 
 #// Commented this since I didn't use it anywhere.
-# def load_second_params(param):
+#def load_second_params(param):
     """
     Based on the lidar range and resolution of voxel, calcuate the anchor box
     and target resolution.
@@ -200,7 +200,7 @@ def load_point_pillar_params(param):
 
 # The following def is used just only for BevPreprocessor.
 #// Commented this since I didn't use it anywhere.
-#def load_bev_params(param):
+# def load_bev_params(param):
     """
     Load bev related geometry parameters s.t. boundary, resolutions, input
     shape, target shape etc.
@@ -251,7 +251,7 @@ def load_point_pillar_params(param):
     return param
 
 
-def save_yaml(data, save_name):
+# def save_yaml(data, save_name):
     """
     Save the dictionary into a yaml file.
 

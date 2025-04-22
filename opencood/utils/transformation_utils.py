@@ -87,7 +87,7 @@ def x1_to_x2(x1, x2):
     return transformation_matrix
 
 
-def dist_to_continuous(p_dist, displacement_dist, res, downsample_rate):
+#def dist_to_continuous(p_dist, displacement_dist, res, downsample_rate):
     """
     Convert points discretized format to continuous space for BEV representation.
     Parameters

@@ -1,12 +1,12 @@
 name: point_pillar_intermediate_V2VAM_nocompressionV2
 sub_name: 
-root_dir: "training_data/train" # Please add your directory here for the dataset.
-validate_dir: "validating_data/validate"
+root_dir: "training_data\\train" # Please add your directory here for the dataset.
+validate_dir: "validating_data\\validate"
 
 yaml_parser: "load_point_pillar_params" # Name of the parser
 train_params:
   batch_size: &batch_size 2 # Batch size 2 and 4 for val and testing. Written in Point-Pillar paper
-  epoches: 60  # 160 and 320. Written in Point-Pillar paper
+  epoches: 1  # 160 and 320. Written in Point-Pillar paper
   eval_freq: 1
   save_freq: 1
   max_cav: &max_cav 5 # Written  in V2VAM paper
@@ -69,14 +69,14 @@ model:
     backbone_fix: false
 
     pillar_vfe:
-      use_norm: true
+      use_norm: true # Batch_normalization
       with_distance: false
       use_absolute_xyz: true
       num_filters: [64]
     point_pillar_scatter:
-      num_features: 64
+      num_features: 64 # num_bev_features
 
-    base_bev_backbone:
+    base_bev_backbone: # Base backbone comes from VoxelNet Paper
       layer_nums: [3, 5, 8]
       layer_strides: [2, 2, 2]
       num_filters: [64, 128, 256]
