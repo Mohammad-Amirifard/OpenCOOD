@@ -150,6 +150,9 @@ def main():
     # define the loss
     print('*********************Step6: Creating Loss Function*********************')
     criterion = train_utils.create_loss(hypes)
+    print("Conf Loss = Confidence loss = Classification loss * Classification_weight")
+    print("Loc Loss = reg_loss")
+    print("Total loss = reg_loss + conf_loss")
 
     # optimizer setup
     print('*********************Step7: Creating Optimizer*********************')
