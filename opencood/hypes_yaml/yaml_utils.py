@@ -107,7 +107,7 @@ def load_yaml(file, opt=None):
     return param
 
 # The only difference between above and bellow function is the additional added grid_size [704,200,1] key-value to the dictionary.
-#def load_point_pillar_params(param):
+def load_point_pillar_params(param):
     """
     Based on the lidar range and resolution of voxel, calcuate the anchor box
     and target resolution.
