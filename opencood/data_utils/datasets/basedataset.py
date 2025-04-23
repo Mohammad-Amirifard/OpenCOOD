@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-# Author: Runsheng Xu <rxx3386@ucla.edu>
-# License: TDG-Attribution-NonCommercial-NoDistrib
+# There is no unusefull function here.
 
 """
 Basedataset class for all kinds of fusion.
@@ -515,7 +513,7 @@ class BaseDataset(Dataset):
                                     timestamp + '_camera3.png')
         return [camera0_file, camera1_file, camera2_file, camera3_file]
 
-    def project_points_to_bev_map(self, points, ratio=0.1):
+    #def project_points_to_bev_map(self, points, ratio=0.1):
         """
         Project points to BEV occupancy map with default ratio=0.1.
 
@@ -536,7 +534,7 @@ class BaseDataset(Dataset):
         """
         return self.pre_processor.project_points_to_bev_map(points, ratio)
 
-    def augment(self, lidar_np, object_bbx_center, object_bbx_mask):
+    #def augment(self, lidar_np, object_bbx_center, object_bbx_mask):
         """
         Given the raw point cloud, augment by flipping and rotation.
 

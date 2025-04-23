@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-# Author: Runsheng Xu <rxx3386@ucla.edu>, OpenPCDet
-# License: TDG-Attribution-NonCommercial-NoDistrib
+# There is no additional loss here.
 
 """
 Transform points to voxels using sparse conv library
@@ -100,7 +98,7 @@ class SpVoxelPreprocessor(BasePreprocessor):
 
         return data_dict
 
-    def collate_batch(self, batch):
+#    def collate_batch(self, batch):
         """
         Customized pytorch data loader collate function.
 

@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-# Author: Runsheng Xu <rxx3386@ucla.edu>
-# License: TDG-Attribution-NonCommercial-NoDistrib
-
+# There is no additional function here.
 import numpy as np
-
 from opencood.utils import pcd_utils
 
 
@@ -45,7 +41,7 @@ class BasePreprocessor(object):
 
         return data_dict
 
-    def project_points_to_bev_map(self, points, ratio=0.1):
+#    def project_points_to_bev_map(self, points, ratio=0.1):
         """
         Project points to BEV occupancy map with default ratio=0.1.
 

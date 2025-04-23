@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-# Author: Runsheng Xu <rxx3386@ucla.edu>
-# License: TDG-Attribution-NonCommercial-NoDistrib
+# There is no additional function here.
 
 from opencood.data_utils.pre_processor.base_preprocessor import BasePreprocessor
 from opencood.data_utils.pre_processor.sp_voxel_preprocessor import SpVoxelPreprocessor

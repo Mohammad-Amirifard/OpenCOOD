@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Class for data augmentation
-"""
-# Author: Runsheng Xu <rxx3386@ucla.edu>
-# License: TDG-Attribution-NonCommercial-NoDistrib
+# There in no additional function
 
 from functools import partial
 

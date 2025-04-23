@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-# Author: Runsheng Xu <rxx3386@ucla.edu>
-# License: TDG-Attribution-NonCommercial-NoDistrib
+# There is no additional function here.
 
 """
 Template for AnchorGenerator

@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-# Author: Runsheng Xu <rxx3386@ucla.edu>, Hao Xiang <haxiang@g.ucla.edu>
-# License: TDG-Attribution-NonCommercial-NoDistrib
-
-
+# No additional function here.
 import re
 import yaml
 import os
@@ -111,7 +107,7 @@ def load_yaml(file, opt=None):
     return param
 
 # The only difference between above and bellow function is the additional added grid_size [704,200,1] key-value to the dictionary.
-def load_point_pillar_params(param):
+#def load_point_pillar_params(param):
     """
     Based on the lidar range and resolution of voxel, calcuate the anchor box
     and target resolution.
@@ -268,7 +264,7 @@ def load_point_pillar_params(param):
         yaml.dump(data, outfile, default_flow_style=False)
 
 
-def save_yaml_wo_overwriting(data, save_name):
+#def save_yaml_wo_overwriting(data, save_name):
     """
     Save the yaml file without overwriting the existing one.
 

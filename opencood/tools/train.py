@@ -90,6 +90,7 @@ def main():
         batch_sampler_train = torch.utils.data.BatchSampler(
             sampler_train, hypes['train_params']['batch_size'], drop_last=True)
 
+        print(f"Numnber of workers was set to:{num_workers}")
         train_loader = DataLoader(opencood_train_dataset,
                                   batch_sampler=batch_sampler_train,
                                   num_workers=num_workers, # These were 8, due to error I set them to 0
@@ -102,6 +103,7 @@ def main():
     else:
         print('*********************Step4: DataLoader Creating*********************')
         print('Since Distributed training environment not detected. Initializing DataLoader for data parallelization is done.')
+        print(f"Numnber of workers was set to:{num_workers}")
         train_loader = DataLoader(opencood_train_dataset,
                                   batch_size=hypes['train_params']['batch_size'],
                                   num_workers=num_workers,

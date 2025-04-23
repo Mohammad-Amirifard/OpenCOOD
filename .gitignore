@@ -137,4 +137,6 @@ logs/
 opv2v_data_dumping
 checkpoints
 DCOS.md
+training_data
+validating_data
 spconv/

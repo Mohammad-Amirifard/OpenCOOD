@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
-# Author: Runsheng Xu <rxx3386@ucla.edu>
-# License: TDG-Attribution-NonCommercial-NoDistrib
+# There is no unsuful function here.
+
 
 """
 Dataset class for intermediate fusion
@@ -387,7 +386,7 @@ class IntermediateFusionDataset(basedataset.BaseDataset):
 
         return output_dict
 
-    def post_process(self, data_dict, output_dict):
+#    def post_process(self, data_dict, output_dict):
         """
         Process the outputs of the model to 2D/3D bounding box.
 
