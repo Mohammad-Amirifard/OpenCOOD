@@ -98,7 +98,7 @@ class SpVoxelPreprocessor(BasePreprocessor):
 
         return data_dict
 
-#    def collate_batch(self, batch):
+    def collate_batch(self, batch):
         """
         Customized pytorch data loader collate function.
 
