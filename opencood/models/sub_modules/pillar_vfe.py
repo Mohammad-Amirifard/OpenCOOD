@@ -45,7 +45,7 @@ class PFNLayer(nn.Module):
         """
 
 
-
+        print('Input shape to PFn:',inputs.shape)
         #// Step 1: Run Linear Layer
         #? Create a condition to check input shape > 50,000. If so, for more stability we run nn.linear on smaller parts and
         #? then concatenated the result in x variable.
@@ -72,10 +72,12 @@ class PFNLayer(nn.Module):
         x_max = torch.max(x, dim=1, keepdim=True)[0]
 
         if self.last_vfe:
+            print('Output shape of PFn:',x_max.shape)
             return x_max
         else:
             x_repeat = x_max.repeat(1, inputs.shape[1], 1)
             x_concatenated = torch.cat([x, x_repeat], dim=2)
+            print('Output shape of PFn:',x_concatenated.shape)
             return x_concatenated
 
 
@@ -172,7 +174,6 @@ class PillarVFE(nn.Module):
         voxel_features, voxel_num_points, coords = \
             batch_dict['voxel_features'], batch_dict['voxel_num_points'], \
             batch_dict['voxel_coords']
-        
         #? The following code is for:
         #// Cluster offset.
         points_mean = \
@@ -217,5 +218,5 @@ class PillarVFE(nn.Module):
 
 
         batch_dict['pillar_features'] = features
-    
+        print("features:",features.shape)
         return batch_dict

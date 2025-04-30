@@ -169,7 +169,8 @@ def projected_lidar_stack(projected_lidar_list):
 
 def downsample_lidar(pcd_np, num):
     """
-    Downsample the lidar points to a certain number.
+    Downsample the lidar points to a certain number. 
+    It selects some pints in pillars randomly.
 
     Parameters
     ----------
