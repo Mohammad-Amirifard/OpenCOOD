@@ -1,21 +1,31 @@
 name: point_pillar_intermediate_V2VAM_nocompressionV2
+
+
+#################################### Directory Setup  ####################################
 sub_name: 
 root_dir: "training_data\\train" # Please add your directory here for the dataset.
 validate_dir: "validating_data\\validate"
 
+#################################### Parser Setup  ####################################
 yaml_parser: "load_point_pillar_params" # Name of the parser
+
+
+#################################### Training Parameters  ####################################
 train_params:
-  batch_size: &batch_size 2 # Batch size 2 and 4 for val and testing. Written in Point-Pillar paper
+  batch_size: &batch_size 4 # Batch size 2 and 4 for val and testing. Written in Point-Pillar paper
   epoches: 1  # 160 and 320. Written in Point-Pillar paper
   eval_freq: 1
   save_freq: 1
   max_cav: &max_cav 5 # Written  in V2VAM paper
 
+
+#################################### Fusion Parameters  ####################################
 fusion:
   core_method: 'IntermediateFusionDataset' # LateFusionDataset, EarlyFusionDataset, IntermediateFusionDataset supported
   args: []
 
-# preprocess-related
+
+#################################### preprocess Parameters  ####################################
 preprocess:
   # options: BasePreprocessor, VoxelPreprocessor, BevPreprocessor
   core_method: 'SpVoxelPreprocessor'
@@ -26,7 +36,6 @@ preprocess:
     max_voxel_test: 70000
   # lidar range for each individual cav.
   cav_lidar_range: &cav_lidar [-140.8, -40, -3, 140.8, 40, 1]
-
 data_augment:
   - NAME: random_world_flip
     ALONG_AXIS_LIST: [ 'x' ]
@@ -37,7 +46,8 @@ data_augment:
   - NAME: random_world_scaling
     WORLD_SCALE_RANGE: [ 0.95, 1.05 ]
 
-# anchor box related
+
+#################################### postprocess Parameters  ####################################
 postprocess:
   core_method: 'VoxelPostprocessor' # VoxelPostprocessor, BevPostprocessor supported
   anchor_args:
@@ -57,7 +67,9 @@ postprocess:
   order: 'hwl' # hwl or lwh : refer to the order in which the dimensions of the bounding box are specified
   max_num: 100  # maximum number of objects in a single frame. use this number to make sure different frames has the same dimension in the same batch
   nms_thresh: 0.15 # Non-Maximum Suppression
-# model related
+
+
+#################################### Model Parameters  ####################################
 model:
   core_method: point_pillar_intermediate_V2VAM
   args:
@@ -88,22 +100,19 @@ model:
       padding: [1]
       dim: [256]
       input_dim: 384 # 128 * 3
-
+optimizer:
+  core_method: Adam
+  lr: 1e-3
+  args:
+    eps: 1e-10 # epsilon used for normalization to prevent zero result
 loss:
   core_method: point_pillar_loss
   args:
     cls_weight: 1.0
     reg: 2.0
-
-optimizer:
-  core_method: Adam
-  lr: 0.0000001
-  args:
-    eps: 1e-10
-    weight_decay: 1e-4
-
 lr_scheduler:
   core_method: multistep #step, multistep and Exponential support
   gamma: 0.1
   step_size: [15,40,60]
+
 
