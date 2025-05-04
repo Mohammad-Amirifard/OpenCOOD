@@ -67,7 +67,7 @@ def train_parser():
 
  
 def main():
-    num_workers = 0
+    num_workers = 4
     opt = train_parser()
 
     print("*********************Step1: Yaml file Reading*********************")

@@ -125,6 +125,12 @@ class BaseDataset(Dataset):
         self.scenario_database = OrderedDict()
         self.len_record = []
 
+        # loop to see different folders/scenarios read
+        temp_scenario_folders_list = [os.path.basename(scenario_folder) for scenario_folder in scenario_folders]
+        print('-'*50)
+        print(f'Scenraio folders read so far {os.path.basename(os.path.dirname(root_dir))} :\n{temp_scenario_folders_list}'\
+              f', including {len(temp_scenario_folders_list)} folders')
+        print('-'*50)
         # loop over all scenarios
         for (i, scenario_folder) in enumerate(scenario_folders):
             self.scenario_database.update({i: OrderedDict()})
@@ -133,7 +139,8 @@ class BaseDataset(Dataset):
             cav_list = sorted([x for x in os.listdir(scenario_folder)
                                if os.path.isdir(
                     os.path.join(scenario_folder, x))])
-            print(f"For scenario folder: {scenario_folder}, cav_list is :{cav_list}")
+            #print('-'*50)
+            #print(f"For scenario folder: {scenario_folder}, cav_list is :{cav_list}")
             assert len(cav_list) > 0
 
             # roadside unit data's id is always negative, so here we want to
@@ -144,10 +151,11 @@ class BaseDataset(Dataset):
 
             # loop over all CAV data
             for (j, cav_id) in enumerate(cav_list):
-                print('-'*50)
-                print(f'Look at the cav_id {cav_id}')
+                #print('-'*50)
+                
                 if j > self.max_cav - 1:
-                    print(f'Found too many cavs')
+                    print(f'With looking at the cav_id {cav_id} in {scenario_folder} ')
+                    print(f'We found too many cavs. So we consider {self.max_cav} of them not all.')
                     break
                 self.scenario_database[i][cav_id] = OrderedDict()
 
@@ -162,7 +170,7 @@ class BaseDataset(Dataset):
                             x.endswith('.yaml') and 'additional' not in x])
                 timestamps = self.extract_timestamps(yaml_files)
                 #print("Timestamps are obtained from the yaml files")
-                print(f"For above cav_id, these timestamps are available:\n{timestamps}")
+                #print(f"For above cav_id, there are {len(timestamps)} timestamps which are available:\n{timestamps}")
                 for timestamp in timestamps:
                     # For each timestamm, we create the address for yaml, lidar, camera files.
                     self.scenario_database[i][cav_id][timestamp] = \
@@ -189,16 +197,16 @@ class BaseDataset(Dataset):
                     self.scenario_database[i][cav_id]['ego'] = True
                     if not self.len_record:
                         self.len_record.append(len(timestamps))
-                        print(f'if not self.len_record, len_record (len(timestamps)) is:{self.len_record}')
+                        #print(f'len_record variable, standing for number of timestamps in the ego car folder, is created with value {self.len_record}')
 
                     else:
                         prev_last = self.len_record[-1]
                         self.len_record.append(prev_last + len(timestamps))
-                        print(f'if self.len_record, len_record (len(timestamps)) is:{self.len_record}')
+                        #print(f'if self.len_record, len_record (len(timestamps)) is:{self.len_record}')
 
                 else:
                     self.scenario_database[i][cav_id]['ego'] = False
-                print('end')
+                #print('end')
         # At the end we have a dictionary called scenario_database-->[scenario_index][cav_id][timestamp/ego][yaml_file_dir/lidar_file_dir/camera0_file_dir].                       
         # print(self.scenario_database[0]['641']['000837']['yaml']) -->output: Dataset\train\2021_08_16_22_26_54\641\000837.yaml
         # print(self.len_record) -->Is the cummulative number of timestaps--> [419, 493, 572, 694, 936, 1203,...]. E.G: 419 is the number of timestamp in scenario_index=0
@@ -243,7 +251,6 @@ class BaseDataset(Dataset):
         # We hace len_record = [419, 493,572,....]
         # For exmaple: if idx = 410 -->scenario_index =0
         # If idx=430-->scenario_index = 1
-        print(f"Len_record:{self.len_record}")
 
         # Chose the right scenarion folder based on the idx we recieve
         for index, value in enumerate(self.len_record):
@@ -307,7 +314,10 @@ class BaseDataset(Dataset):
         timestamps = []
 
         for file in yaml_files:
-            res = file.split("\\")[-1]  # Use forward slash for splitting
+            if "\\" in file:
+                res = file.split("\\")[-1]  # Use forward slash for splitting
+            else:
+                res = file.split("/")[-1]
             timestamp = res.replace('.yaml', '')
             timestamps.append(timestamp)
 
@@ -356,7 +366,6 @@ class BaseDataset(Dataset):
         assert ego_lidar_pose is not None
 
         # calculate the distance
-        print(f'timestamp_key:{timestamp_key}')
         for cav_id, cav_content in scenario_database.items():
             try :
                 cur_lidar_pose = \
