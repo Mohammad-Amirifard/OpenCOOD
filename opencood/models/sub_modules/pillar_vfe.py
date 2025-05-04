@@ -72,12 +72,12 @@ class PFNLayer(nn.Module):
         x_max = torch.max(x, dim=1, keepdim=True)[0]
 
         if self.last_vfe:
-            print('Output shape of PFn:',x_max.shape)
+            #print('Output shape of PFn:',x_max.shape)
             return x_max
         else:
             x_repeat = x_max.repeat(1, inputs.shape[1], 1)
             x_concatenated = torch.cat([x, x_repeat], dim=2)
-            print('Output shape of PFn:',x_concatenated.shape)
+            #print('Output shape of PFn:',x_concatenated.shape)
             return x_concatenated
 
 
@@ -218,5 +218,5 @@ class PillarVFE(nn.Module):
 
 
         batch_dict['pillar_features'] = features
-        print("features:",features.shape)
+        #print("features:",features.shape)
         return batch_dict

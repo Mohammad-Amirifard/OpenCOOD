@@ -112,7 +112,7 @@ class BaseDataset(Dataset):
 
         if 'train_params' not in params or\
                 'max_cav' not in params['train_params']:
-            self.max_cav = 7
+            self.max_cav = 5
         else:
             self.max_cav = params['train_params']['max_cav']
 
