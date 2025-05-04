@@ -45,7 +45,7 @@ class PFNLayer(nn.Module):
         """
 
 
-        print('Input shape to PFn:',inputs.shape)
+        #print('Input shape to PFn:',inputs.shape)
         #// Step 1: Run Linear Layer
         #? Create a condition to check input shape > 50,000. If so, for more stability we run nn.linear on smaller parts and
         #? then concatenated the result in x variable.
@@ -104,7 +104,7 @@ class PillarVFE(nn.Module):
         #! number of filters is [64] and num_point_features is X+3. So num_filters=[64,X+3]
         assert len(self.num_filters) > 0
         num_filters = [num_point_features] + list(self.num_filters)
-        print('Num_filters which is used for pillar VFE is:',num_filters)
+        #print('Num_filters which is used for pillar VFE is:',num_filters)
         # num_filters = [10, 64]
         
         #// Step2: RunPFN class for different in and out filters
