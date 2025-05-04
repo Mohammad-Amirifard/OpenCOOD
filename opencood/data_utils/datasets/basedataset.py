@@ -569,7 +569,7 @@ class BaseDataset(Dataset):
             (n, 7) shape to represent bbx's x, y, z, h, w, l, yaw
 
         object_bbx_mask : np.ndarray
-            Indicate which elements in object_bbx_center are padded.
+            Indicate which elements in object_bbx_center are padded..
         """
         tmp_dict = {'lidar_np': lidar_np,
                     'object_bbx_center': object_bbx_center,
