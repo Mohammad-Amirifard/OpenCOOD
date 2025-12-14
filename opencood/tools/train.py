@@ -185,6 +185,8 @@ def main():
     print(f"Batch_size = {batch_size}")
     print(f"Number of epochs = {epoches}")
     print(f"Number of batch_Data to analyse in each epoch = {len(train_loader)}")
+
+    epoch_loss_dict = {}
     for epoch in range(init_epoch, max(epoches, init_epoch)):
         
         if hypes['lr_scheduler']['core_method'] != 'cosineannealwarm':
@@ -206,7 +208,7 @@ def main():
         
 
         index =0
-        
+        batch_loss_list = []
         for batch_data in train_loader:
 
             # the model will be evaluation mode during validation
@@ -236,9 +238,12 @@ def main():
                     final_loss = criterion(ouput_dict,
                                            batch_data['ego']['label_dict'])
 
-
+            
             criterion.logging(epoch, index, len(train_loader), writer, pbar=pbar2)
             pbar2.update(1)
+       
+            loss_value = final_loss.item()
+            batch_loss_list.append(loss_value)
 
             if not opt.half:
                 final_loss.backward()
@@ -252,6 +257,13 @@ def main():
                 scheduler.step_update(epoch * num_steps + index)
             
             index +=1
+
+        epoch_loss_dict[epoch] = {}
+        epoch_loss_dict[epoch]['ave_loss'] =statistics.mean(batch_loss_list)
+        epoch_loss_dict[epoch]['batch_loss_list'] = batch_loss_list
+        epoch_loss_dict[epoch]['lr'] = optimizer.param_groups[0]['lr']
+        epoch_loss_dict[epoch]['min_loss'] = min(batch_loss_list)
+
 
         if epoch % hypes['train_params']['save_freq'] == 0:
             torch.save(model_without_ddp.state_dict(),
@@ -275,6 +287,8 @@ def main():
                                                               valid_ave_loss))
             writer.add_scalar('Validate_Loss', valid_ave_loss, epoch)
 
+            epoch_loss_dict[epoch]['val_ave_loss'] = valid_ave_loss
+            
     print('Training Finished, checkpoints saved to %s' % saved_path)
 
 
