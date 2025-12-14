@@ -94,6 +94,7 @@ class BaseDataset(Dataset):
                     if 'backbone_delay' in params['wild_setting'] else 0
 
         else:
+            print('No wild setting is specified, using default values.(no noise)')
             self.async_flag = False
             self.async_overhead = 0  # ms
             self.async_mode = 'sim'
@@ -127,10 +128,10 @@ class BaseDataset(Dataset):
 
         # loop to see different folders/scenarios read
         temp_scenario_folders_list = [os.path.basename(scenario_folder) for scenario_folder in scenario_folders]
-        print('-'*50)
+        
         print(f'Scenraio folders read so far {os.path.basename(os.path.dirname(root_dir))} :\n{temp_scenario_folders_list}'\
               f', including {len(temp_scenario_folders_list)} folders')
-        print('-'*50)
+        
         # loop over all scenarios
         for (i, scenario_folder) in enumerate(scenario_folders):
             self.scenario_database.update({i: OrderedDict()})

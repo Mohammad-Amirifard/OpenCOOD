@@ -43,6 +43,12 @@ def init_distributed_mode(args):
 
     # Print initialization info for debugging
     print(f'| Distributed initialization (rank {args.rank}): {args.dist_url}', flush=True)
+    
+    # Verify GPU setup
+    print(f'| GPU device set: {args.gpu}', flush=True)
+    print(f'| Current CUDA device: {torch.cuda.current_device()}', flush=True)
+    print(f'| CUDA device name: {torch.cuda.get_device_name(args.gpu)}', flush=True)
+    print(f'| Total GPUs available: {torch.cuda.device_count()}', flush=True)
 
     # Initialize the default process group
     dist.init_process_group(

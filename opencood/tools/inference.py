@@ -57,9 +57,10 @@ def main():
     print('Dataset Building')
     opencood_dataset = build_dataset(hypes, visualize=True, train=False)
     print(f"{len(opencood_dataset)} samples found.")
+    num_workers = 0
     data_loader = DataLoader(opencood_dataset,
                              batch_size=1,
-                             num_workers=16,
+                             num_workers=num_workers,
                              collate_fn=opencood_dataset.collate_batch_test,
                              shuffle=False,
                              pin_memory=False,
@@ -101,7 +102,7 @@ def main():
             vis_aabbs_pred.append(o3d.geometry.LineSet())
 
     for i, batch_data in tqdm(enumerate(data_loader)):
-        # print(i)
+        print("Here i is: ", i)
         with torch.no_grad():
             batch_data = train_utils.to_device(batch_data, device)
             if opt.fusion_method == 'late':

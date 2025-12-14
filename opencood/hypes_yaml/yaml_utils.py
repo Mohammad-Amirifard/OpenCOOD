@@ -247,7 +247,7 @@ def load_point_pillar_params(param):
     return param
 
 
-# def save_yaml(data, save_name):
+def save_yaml(data, save_name):
     """
     Save the dictionary into a yaml file.
 
@@ -264,7 +264,7 @@ def load_point_pillar_params(param):
         yaml.dump(data, outfile, default_flow_style=False)
 
 
-#def save_yaml_wo_overwriting(data, save_name):
+def save_yaml_wo_overwriting(data, save_name):
     """
     Save the yaml file without overwriting the existing one.
 

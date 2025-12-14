@@ -5,7 +5,7 @@
 
 from os.path import dirname, realpath
 from setuptools import setup, find_packages, Distribution
-from opencood.version import __version__
+
 
 
 def _read_requirements_file():
@@ -17,7 +17,6 @@ def _read_requirements_file():
 
 setup(
     name='OpenCOOD',
-    version=__version__,
     packages=find_packages(),
     url='https://github.com/ucla-mobility/OpenCDA.git',
     license='MIT',
@@ -25,6 +24,6 @@ setup(
     author_email='rxx3386@ucla.edu',
     description='An opensource pytorch framework for autonomous driving '
                 'cooperative detection',
-    long_description=open("README.md").read(),
+    long_description="You can find more details about OpenCOOD at ",
     install_requires=_read_requirements_file(),
 )

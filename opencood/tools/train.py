@@ -11,6 +11,7 @@ import statistics
 import json
 import torch
 import tqdm
+import platform
 from tensorboardX import SummaryWriter
 from torch.utils.data import DataLoader, DistributedSampler
 import opencood.hypes_yaml.yaml_utils as yaml_utils
@@ -19,6 +20,7 @@ from opencood.tools import multi_gpu_utils
 from opencood.data_utils.datasets import build_dataset
 from opencood.tools import train_utils
 import warnings
+import time
 warnings.filterwarnings("ignore")
 
 from torchviz import make_dot
@@ -65,19 +67,25 @@ def train_parser():
     return opt
 
 
- 
+start_time = time.time()
 def main():
-    num_workers = 4
+    num_workers = 0
     opt = train_parser()
-
-    print("*********************Step1: Yaml file Reading*********************")
+    print("*********************Step0: Train parser completed *********************")
+    print('You passed the following options:\n',opt)
+    
     hypes = yaml_utils.load_yaml(opt.hypes_yaml, opt)
+    print("*********************Step1: Yaml file Readed*********************")
+    print("The configuration setup read from above path is as follow:\n",hypes)
+
     
     print('*********************Step2: Multi GPU Checking*********************',end="\n")
     multi_gpu_utils.init_distributed_mode(opt)
     
-    print('*********************Step3: Train and Validate Dataset Building*********************')
+
+    print('*********************Step3_1: Train Dataset Building*********************')
     opencood_train_dataset = build_dataset(dataset_cfg=hypes, visualize=False, train=True)
+    print('*********************Step3_2: Validate Dataset Building*********************')
     opencood_validate_dataset = build_dataset(dataset_cfg=hypes, visualize=False, train=False)
     
     if opt.distributed:
@@ -109,14 +117,14 @@ def main():
                                   num_workers=num_workers,
                                   collate_fn=opencood_train_dataset.collate_batch_train,
                                   shuffle=True,
-                                  pin_memory=False,
+                                  pin_memory=True,
                                   drop_last=True)
         val_loader = DataLoader(opencood_validate_dataset,
                                 batch_size=hypes['train_params']['batch_size'],
                                 num_workers=num_workers,
                                 collate_fn=opencood_train_dataset.collate_batch_train,
                                 shuffle=False,
-                                pin_memory=False,
+                                pin_memory=True,
                                 drop_last=True)
 
     print('*********************Step5: Creating Model*********************')
@@ -272,3 +280,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+end_time = time.time()
+print(f"Total training time: {int((end_time - start_time)/60)} minutes")
