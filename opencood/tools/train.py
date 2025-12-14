@@ -187,8 +187,10 @@ def main():
     print(f"Number of batch_Data to analyse in each epoch = {len(train_loader)}")
 
     epoch_loss_dict = {}
+   
     for epoch in range(init_epoch, max(epoches, init_epoch)):
-        
+        st = time.time()
+
         if hypes['lr_scheduler']['core_method'] != 'cosineannealwarm':
             scheduler.step(epoch)
         if hypes['lr_scheduler']['core_method'] == 'cosineannealwarm':
@@ -286,9 +288,10 @@ def main():
             print('At epoch %d, the validation loss is %f' % (epoch,
                                                               valid_ave_loss))
             writer.add_scalar('Validate_Loss', valid_ave_loss, epoch)
-
             epoch_loss_dict[epoch]['val_ave_loss'] = valid_ave_loss
-            
+        
+        sp = time.time()
+        print(f"Total training time for {epoches} epochs: {int((sp - st)/60)} minutes")
     print('Training Finished, checkpoints saved to %s' % saved_path)
 
 
