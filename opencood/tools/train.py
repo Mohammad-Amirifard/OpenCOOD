@@ -21,6 +21,7 @@ from opencood.data_utils.datasets import build_dataset
 from opencood.tools import train_utils
 import warnings
 import time
+import numpy as np
 warnings.filterwarnings("ignore")
 
 from torchviz import make_dot
@@ -69,7 +70,7 @@ def train_parser():
 
 start_time = time.time()
 def main():
-    num_workers = 0
+    num_workers = 2
     opt = train_parser()
     print("*********************Step0: Train parser completed *********************")
     print('You passed the following options:\n',opt)
@@ -118,14 +119,16 @@ def main():
                                   collate_fn=opencood_train_dataset.collate_batch_train,
                                   shuffle=True,
                                   pin_memory=True,
-                                  drop_last=True)
+                                  drop_last=True,
+                                  prefetch_factor=2)
         val_loader = DataLoader(opencood_validate_dataset,
                                 batch_size=hypes['train_params']['batch_size'],
                                 num_workers=num_workers,
                                 collate_fn=opencood_train_dataset.collate_batch_train,
                                 shuffle=False,
                                 pin_memory=True,
-                                drop_last=True)
+                                drop_last=True,
+                                prefetch_factor=2)
 
     print('*********************Step5: Creating Model*********************')
     model = train_utils.create_model(hypes)
@@ -186,8 +189,8 @@ def main():
     print(f"Number of epochs = {epoches}")
     print(f"Number of batch_Data to analyse in each epoch = {len(train_loader)}")
 
-    epoch_loss_dict = {}
-   
+    
+    
     for epoch in range(init_epoch, max(epoches, init_epoch)):
         st = time.time()
 
@@ -210,7 +213,7 @@ def main():
         
 
         index =0
-        batch_loss_list = []
+        train_loss_batch=[]
         for batch_data in train_loader:
 
             # the model will be evaluation mode during validation
@@ -245,7 +248,7 @@ def main():
             pbar2.update(1)
        
             loss_value = final_loss.item()
-            batch_loss_list.append(loss_value)
+
 
             if not opt.half:
                 final_loss.backward()
@@ -257,22 +260,22 @@ def main():
 
             if hypes['lr_scheduler']['core_method'] == 'cosineannealwarm':
                 scheduler.step_update(epoch * num_steps + index)
-            
+            train_loss_batch.append(loss_value)
+            writer.add_scalar('Train_Loss/batch', loss_value,
+                              epoch * len(train_loader) + index)
+            writer.flush()
             index +=1
 
-        epoch_loss_dict[epoch] = {}
-        epoch_loss_dict[epoch]['ave_loss'] =statistics.mean(batch_loss_list)
-        epoch_loss_dict[epoch]['batch_loss_list'] = batch_loss_list
-        epoch_loss_dict[epoch]['lr'] = optimizer.param_groups[0]['lr']
-        epoch_loss_dict[epoch]['min_loss'] = min(batch_loss_list)
 
+        writer.add_scalar('Train_Loss/epoch', np.mean(train_loss_batch), epoch)
+        writer.add_scalar('Train_Loss/min_batch', np.min(train_loss_batch), epoch)
 
         if epoch % hypes['train_params']['save_freq'] == 0:
             torch.save(model_without_ddp.state_dict(),
                 os.path.join(saved_path, 'net_epoch%d.pth' % (epoch + 1)))
 
         if epoch % hypes['train_params']['eval_freq'] == 0:
-            valid_ave_loss = []
+            valid_loss_batch = []
 
             with torch.no_grad():
                 for i, batch_data in enumerate(val_loader):
@@ -283,15 +286,20 @@ def main():
 
                     final_loss = criterion(ouput_dict,
                                            batch_data['ego']['label_dict'])
-                    valid_ave_loss.append(final_loss.item())
-            valid_ave_loss = statistics.mean(valid_ave_loss)
+                    valid_loss_batch.append(final_loss.item())
+                    writer.add_scalar('Validate_Loss/batch',
+                                      final_loss.item(),
+                                      epoch * len(val_loader) + i)
+                    writer.flush()
+
             print('At epoch %d, the validation loss is %f' % (epoch,
-                                                              valid_ave_loss))
-            writer.add_scalar('Validate_Loss', valid_ave_loss, epoch)
-            epoch_loss_dict[epoch]['val_ave_loss'] = valid_ave_loss
-        
+                                                              np.mean(valid_loss_batch)))
+
+ 
+
         sp = time.time()
         print(f"Total training time for {epoches} epochs: {int((sp - st)/60)} minutes")
+    
     print('Training Finished, checkpoints saved to %s' % saved_path)
 
 
