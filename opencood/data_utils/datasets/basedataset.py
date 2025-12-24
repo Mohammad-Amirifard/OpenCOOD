@@ -181,15 +181,15 @@ class BaseDataset(Dataset):
                                              timestamp + '.yaml')
                     lidar_file = os.path.join(cav_path,
                                               timestamp + '.pcd')
-                    camera_files = self.load_camera_files(cav_path, timestamp)
+                    # camera_files = self.load_camera_files(cav_path, timestamp)
 
                     self.scenario_database[i][cav_id][timestamp]['yaml'] = \
                         yaml_file
                     self.scenario_database[i][cav_id][timestamp]['lidar'] = \
                         lidar_file
                     # Here camera0 inlcude all 4 camera images.
-                    self.scenario_database[i][cav_id][timestamp]['camera0'] = \
-                        camera_files
+                    # self.scenario_database[i][cav_id][timestamp]['camera0'] = \
+                    #     camera_files
                 # Assume all cavs will have the same timestamps length. Thus
                 # we only need to calculate for the first vehicle in the
                 # scene.
@@ -518,79 +518,32 @@ class BaseDataset(Dataset):
         return delay_params
 
     @staticmethod
-    def load_camera_files(cav_path, timestamp):
-        """
-        Retrieve the paths to all camera files.
+    # def load_camera_files(cav_path, timestamp):
+    #     """
+    #     Retrieve the paths to all camera files.
 
-        Parameters
-        ----------
-        cav_path : str
-            The full file path of current cav.
+    #     Parameters
+    #     ----------
+    #     cav_path : str
+    #         The full file path of current cav.
 
-        timestamp : str
-            Current timestamp
+    #     timestamp : str
+    #         Current timestamp
 
-        Returns
-        -------
-        camera_files : list
-            The list containing all camera png file paths.
-        """
-        camera0_file = os.path.join(cav_path,
-                                    timestamp + '_camera0.png')
-        camera1_file = os.path.join(cav_path,
-                                    timestamp + '_camera1.png')
-        camera2_file = os.path.join(cav_path,
-                                    timestamp + '_camera2.png')
-        camera3_file = os.path.join(cav_path,
-                                    timestamp + '_camera3.png')
-        return [camera0_file, camera1_file, camera2_file, camera3_file]
-
-    #def project_points_to_bev_map(self, points, ratio=0.1):
-        """
-        Project points to BEV occupancy map with default ratio=0.1.
-
-        Parameters
-        ----------
-        points : np.ndarray
-            (N, 3) / (N, 4)
-
-        ratio : float
-            Discretization parameters. Default is 0.1.
-
-        Returns
-        -------
-        bev_map : np.ndarray
-            BEV occupancy map including projected points
-            with shape (img_row, img_col).
-
-        """
-        return self.pre_processor.project_points_to_bev_map(points, ratio)
-
-    #def augment(self, lidar_np, object_bbx_center, object_bbx_mask):
-        """
-        Given the raw point cloud, augment by flipping and rotation.
-
-        Parameters
-        ----------
-        lidar_np : np.ndarray
-            (n, 4) shape
-
-        object_bbx_center : np.ndarray
-            (n, 7) shape to represent bbx's x, y, z, h, w, l, yaw
-
-        object_bbx_mask : np.ndarray
-            Indicate which elements in object_bbx_center are padded..
-        """
-        tmp_dict = {'lidar_np': lidar_np,
-                    'object_bbx_center': object_bbx_center,
-                    'object_bbx_mask': object_bbx_mask}
-        tmp_dict = self.data_augmentor.forward(tmp_dict)
-
-        lidar_np = tmp_dict['lidar_np']
-        object_bbx_center = tmp_dict['object_bbx_center']
-        object_bbx_mask = tmp_dict['object_bbx_mask']
-
-        return lidar_np, object_bbx_center, object_bbx_mask
+    #     Returns
+    #     -------
+    #     camera_files : list
+    #         The list containing all camera png file paths.
+    #     """
+    #     camera0_file = os.path.join(cav_path,
+    #                                 timestamp + '_camera0.png')
+    #     camera1_file = os.path.join(cav_path,
+    #                                 timestamp + '_camera1.png')
+    #     camera2_file = os.path.join(cav_path,
+    #                                 timestamp + '_camera2.png')
+    #     camera3_file = os.path.join(cav_path,
+    #                                 timestamp + '_camera3.png')
+    #     return [camera0_file, camera1_file, camera2_file, camera3_file]
 
     def collate_batch_train(self, batch):
         """

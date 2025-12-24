@@ -6,6 +6,10 @@ def collect_yaml_files_by_folder(root_dir):
 
     for dirpath, dirnames, filenames in os.walk(root_dir):
         yaml_files = [f.split(".")[0] for f in filenames if f.endswith('.yaml')]
+        # Remove .png files from the directory
+        for f in filenames:
+            if f.endswith('.png'):
+                os.remove(os.path.join(dirpath, f))
         if yaml_files:
             new_dir_path = dirpath.split("\\")[-1]
                                          
@@ -14,7 +18,7 @@ def collect_yaml_files_by_folder(root_dir):
     return yaml_files_by_folder
 
 # Example usage:
-root_directory = r'D:\Master Thesis\Simulation part\Python\OpenCOOD\training_data'
+root_directory = r"C:\Users\mohammed.amirifard\Desktop\Github_Projects\OpenCOOD\testing_data - Copy"
 yaml_files = collect_yaml_files_by_folder(root_directory)
 
 import csv

@@ -13,7 +13,7 @@ yaml_parser: "load_point_pillar_params" # Name of the parser
 #################################### Training Parameters  ####################################
 train_params:
   batch_size: &batch_size 4 # Batch size 2 and 4 for val and testing. Written in Point-Pillar paper
-  epoches: 20  # 160 and 320. Written in Point-Pillar paper
+  epoches: 60  # 160 and 320. Written in Point-Pillar paper
   eval_freq: 1
   save_freq: 1
   max_cav: &max_cav 5 # Written  in V2VAM paper
@@ -104,7 +104,7 @@ model:
 #################################### Optimizer Parameters  ####################################
 optimizer:
   core_method: Adam
-  lr: 1e-7 # it is 1e-7
+  lr: 1e-3 # it is 1e-7
   args:
     eps: 1e-10 # epsilon used for normalization to prevent zero result
     weight_decay: 1e-4
@@ -118,6 +118,6 @@ loss:
 lr_scheduler:
   core_method: multistep #step, multistep and Exponential support
   gamma: 0.1
-  step_size: [5,10,15] # Default [15,40,60]
+  step_size: [15,20,30,50] # Default [15,40,60]
 
 
