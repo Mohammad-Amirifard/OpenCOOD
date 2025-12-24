@@ -4,6 +4,7 @@ import torch.nn as nn
 
 
 class BaseBEVBackbone(nn.Module):
+    
     def __init__(self, model_cfg, input_channels):
         super().__init__()
         self.model_cfg = model_cfg
@@ -32,7 +33,7 @@ class BaseBEVBackbone(nn.Module):
 
         num_levels = len(layer_nums)
         c_in_list = [input_channels, *num_filters[:-1]]
-
+        print("BaseBEVBackbone input shpae:", c_in_list)
         self.blocks = nn.ModuleList()
         self.deblocks = nn.ModuleList()
 
@@ -98,7 +99,7 @@ class BaseBEVBackbone(nn.Module):
         ups = []
         ret_dict = {}
         x = spatial_features
-
+        print("Input shape to BaseBEVBackbone using spatial_features:", x.shape)
         for i in range(len(self.blocks)):
             x = self.blocks[i](x)
 
@@ -117,6 +118,7 @@ class BaseBEVBackbone(nn.Module):
 
         if len(self.deblocks) > len(self.blocks):
             x = self.deblocks[-1](x)
+            print("Output shape after BaseBEVBackbone:", x.shape)
 
         data_dict['spatial_features_2d'] = x
         return data_dict

@@ -298,7 +298,7 @@ def main():
  
 
         sp = time.time()
-        print(f"Total training time for {epoches} epochs: {int((sp - st)/60)} minutes")
+        print(f"Total training time for epoch {epoch} : {int((sp - st)/60)} minutes")
     
     print('Training Finished, checkpoints saved to %s' % saved_path)
 

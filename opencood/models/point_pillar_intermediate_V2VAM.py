@@ -9,7 +9,6 @@ from opencood.models.sub_modules.pillar_vfe import PillarVFE
 from opencood.models.sub_modules.point_pillar_scatter import PointPillarScatter
 from opencood.models.sub_modules.base_bev_backbone import BaseBEVBackbone
 from opencood.models.sub_modules.downsample_conv import DownsampleConv
-from opencood.models.sub_modules.naive_compress import NaiveCompressor
 from opencood.models.fuse_modules.V2VAM import V2V_AttFusion
 
 
@@ -42,10 +41,7 @@ class PointPillarintermediateV2VAM(nn.Module):
             self.shrink_conv = DownsampleConv(args['shrink_header'])
         self.compression = False
 
-        if args['compression'] > 0:
-            self.compression = True
-            print("self.compression: ", self.compression, args['compression'])
-            self.naive_compressor = NaiveCompressor(256, args['compression'])
+
 
         self.fusion_net = V2V_AttFusion(256)
 

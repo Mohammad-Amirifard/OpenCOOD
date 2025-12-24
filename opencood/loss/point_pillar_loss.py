@@ -88,9 +88,9 @@ class PointPillarLoss(nn.Module):
         output_dict : dict
         target_dict : dict
         """
-        rm = output_dict['rm']
-        psm = output_dict['psm']
-        targets = target_dict['targets']
+        rm = output_dict['rm']  # regression map (predicted 3D box parameters for each anchor)
+        psm = output_dict['psm']  # predict classification score map (how likely each anchor/cell contains an object)
+        targets = target_dict['targets'] # egression targets (the “correct” box values for matched anchors)
 
         cls_preds = psm.permute(0, 2, 3, 1).contiguous()
 
@@ -143,7 +143,7 @@ class PointPillarLoss(nn.Module):
                                'reg_loss': reg_loss,
                                'conf_loss': conf_loss})
 
-        return total_loss
+        return total_loss # Includes both classification and regression loss
 
     def cls_loss_func(self, input: torch.Tensor,
                       target: torch.Tensor,
