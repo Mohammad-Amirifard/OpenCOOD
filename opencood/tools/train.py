@@ -238,8 +238,8 @@ def main():
             else:
                 with torch.cuda.amp.autocast():
                     ouput_dict = model(batch_data['ego'])
-                    if epoch == 0:
-                        make_dot(ouput_dict, params=dict(model.named_parameters())).render("model_graph", format="png")
+                    # if epoch == 0:
+                    #     make_dot(ouput_dict, params=dict(model.named_parameters())).render("model_graph", format="png")
                     final_loss = criterion(ouput_dict,
                                            batch_data['ego']['label_dict'])
 
