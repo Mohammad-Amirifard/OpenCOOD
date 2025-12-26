@@ -313,7 +313,7 @@ def main():
             'val_loss_min': np.min(valid_loss_batch) if 'valid_loss_batch' in locals() else None,
             'val_loss_batch': valid_loss_batch if 'valid_loss_batch' in locals() else None
         }
-        with open(os.path.join(saved_path, 'loss_dict.json'), 'w') as f:
+        with open(os.path.join(saved_path, f'loss_dict_{epoch}.json'), 'w') as f:
             json.dump(loss_dict, f, indent=4)
 
         sp = time.time()
