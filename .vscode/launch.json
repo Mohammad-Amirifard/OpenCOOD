@@ -3,7 +3,7 @@
   "configurations": [
     
     {
-      "name": "Train",
+      "name": "Train_Debuger",
       "type": "debugpy",
       "request": "launch",
       "module": "opencood.tools.train",
@@ -12,6 +12,7 @@
         "--hypes_yaml","opencood/hypes_yaml/point_pillar_intermediate_V2VAM.yaml"
 
       ]
+      ,"python": "C:\\Users\\mohammed.amirifard\\miniforge3\\envs\\V2VAM\\python.exe"
     }
   ]
 }
