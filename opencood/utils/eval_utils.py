@@ -8,8 +8,8 @@ import os
 import numpy as np
 import torch
 
-from opencood.utils import common_utils
-from opencood.hypes_yaml import yaml_utils
+from Cooperative_Perception.utils import common_utils
+from Cooperative_Perception.hypes_yaml import yaml_utils
 
 
 def voc_ap(rec, prec):

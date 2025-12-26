@@ -7,7 +7,7 @@ Template for AnchorGenerator
 import numpy as np
 import torch
 
-from opencood.utils import box_utils
+from Cooperative_Perception.utils import box_utils
 
 
 class BasePostprocessor(object):
@@ -125,7 +125,7 @@ class BasePostprocessor(object):
         object_ids : list
             Length is number of bbx in current sample.
         """
-        from opencood.data_utils.datasets import GT_RANGE
+        from Cooperative_Perception.data_utils.datasets import GT_RANGE
 
         tmp_object_dict = {} # It will be filled like this {'object_id':'object_content}}
         for cav_content in cav_contents:

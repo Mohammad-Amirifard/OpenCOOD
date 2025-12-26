@@ -12,8 +12,8 @@ import matplotlib.pyplot as plt
 
 from matplotlib import cm
 
-from opencood.utils import box_utils
-from opencood.utils import common_utils
+from Cooperative_Perception.utils import box_utils
+from Cooperative_Perception.utils import common_utils
 
 VIRIDIS = np.array(cm.get_cmap('plasma').colors)
 VID_RANGE = np.linspace(0.0, 1.0, VIRIDIS.shape[0])

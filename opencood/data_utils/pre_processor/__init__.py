@@ -1,7 +1,7 @@
 # There is no additional function here.
 
-from opencood.data_utils.pre_processor.base_preprocessor import BasePreprocessor
-from opencood.data_utils.pre_processor.sp_voxel_preprocessor import SpVoxelPreprocessor
+from Cooperative_Perception.data_utils.pre_processor.base_preprocessor import BasePreprocessor
+from Cooperative_Perception.data_utils.pre_processor.sp_voxel_preprocessor import SpVoxelPreprocessor
 
 __all__ = {
     'BasePreprocessor': BasePreprocessor,
@@ -12,7 +12,7 @@ __all__ = {
 def build_preprocessor(preprocess_cfg, train):
     process_method_name = preprocess_cfg['core_method']
     error_message = f"{process_method_name} is not found. " \
-                     f"Please add your processor file's name in opencood/" \
+                     f"Please add your processor file's name in Cooperative_Perception/" \
                      f"data_utils/processor/init.py"
     assert process_method_name in ['BasePreprocessor', 'SpVoxelPreprocessor'], \
         error_message

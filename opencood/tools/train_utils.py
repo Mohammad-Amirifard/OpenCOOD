@@ -23,12 +23,12 @@ def load_saved_model(saved_path, model):
     __________
     saved_path : str
        model saved path
-    model : opencood object
+    model : Cooperative_Perception object
         The model instance.
 
     Returns
     -------
-    model : opencood object
+    model : Cooperative_Perception object
         The model instance loaded pretrained params.
     """
     assert os.path.exists(saved_path), '{} not found'.format(saved_path)
@@ -110,13 +110,13 @@ def create_model(hypes):
 
     Returns
     -------
-    model : opencood,object
+    model : Cooperative_Perception,object
         Model object.
     """
     backbone_name = hypes['model']['core_method']
     backbone_config = hypes['model']['args']
 
-    model_filename = "opencood.models." + backbone_name
+    model_filename = "Cooperative_Perception.models." + backbone_name
     model_lib = importlib.import_module(model_filename)
     model = None
     target_model_name = backbone_name.replace('_', '')
@@ -146,13 +146,13 @@ def create_loss(hypes):
         Configuration params for training.
     Returns
     -------
-    criterion : opencood.object
+    criterion : Cooperative_Perception.object
         The loss function.
     """
     loss_func_name = hypes['loss']['core_method'] # point_pillar_loss
     loss_func_config = hypes['loss']['args']
 
-    loss_filename = "opencood.loss." + loss_func_name # opencood.loss.point_pillar_loss
+    loss_filename = "Cooperative_Perception.loss." + loss_func_name # Cooperative_Perception.loss.point_pillar_loss
     loss_lib = importlib.import_module(loss_filename)
     loss_func = None
     target_loss_name = loss_func_name.replace('_', '')
@@ -181,7 +181,7 @@ def setup_optimizer(hypes, model):
     ----------
     hypes : dict
         The training configurations.
-    model : opencood model
+    model : Cooperative_Perception model
         The pytorch model
     """
     method_dict = hypes['optimizer']

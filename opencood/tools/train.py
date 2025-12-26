@@ -14,11 +14,11 @@ import tqdm
 import platform
 from tensorboardX import SummaryWriter
 from torch.utils.data import DataLoader, DistributedSampler
-import opencood.hypes_yaml.yaml_utils as yaml_utils
-from opencood.tools import train_utils
-from opencood.tools import multi_gpu_utils
-from opencood.data_utils.datasets import build_dataset
-from opencood.tools import train_utils
+import Cooperative_Perception.hypes_yaml.yaml_utils as yaml_utils
+from Cooperative_Perception.tools import train_utils
+from Cooperative_Perception.tools import multi_gpu_utils
+from Cooperative_Perception.data_utils.datasets import build_dataset
+from Cooperative_Perception.tools import train_utils
 import warnings
 import time
 import numpy as np
@@ -40,7 +40,7 @@ def train_parser():
     
     Resturn:
         opt: It will be something like 
-        Namespace(dist_url='env://', half=False, hypes_yaml='opencood/hypes_yaml/point_pillar_intermediate_V2VAM.yaml', model_dir='')
+        Namespace(dist_url='env://', half=False, hypes_yaml='Cooperative_Perception/hypes_yaml/point_pillar_intermediate_V2VAM.yaml', model_dir='')
     
     done
     """
@@ -85,46 +85,46 @@ def main():
     
 
     print('*********************Step3_1: Train Dataset Building*********************')
-    opencood_train_dataset = build_dataset(dataset_cfg=hypes, visualize=False, train=True)
+    Cooperative_Perception_train_dataset = build_dataset(dataset_cfg=hypes, visualize=False, train=True)
     print('*********************Step3_2: Validate Dataset Building*********************')
-    opencood_validate_dataset = build_dataset(dataset_cfg=hypes, visualize=False, train=False)
+    Cooperative_Perception_validate_dataset = build_dataset(dataset_cfg=hypes, visualize=False, train=False)
     
     if opt.distributed:
         print('*********************Step4: DataLoader Creating*********************')
         print('Since Distributed training environment detected. Initializing DistributedSampler for data parallelization is done.')
-        sampler_train = DistributedSampler(opencood_train_dataset)
-        sampler_val = DistributedSampler(opencood_validate_dataset,
+        sampler_train = DistributedSampler(Cooperative_Perception_train_dataset)
+        sampler_val = DistributedSampler(Cooperative_Perception_validate_dataset,
                                          shuffle=False)
 
         batch_sampler_train = torch.utils.data.BatchSampler(
             sampler_train, hypes['train_params']['batch_size'], drop_last=True)
 
         print(f"Numnber of workers was set to:{num_workers}")
-        train_loader = DataLoader(opencood_train_dataset,
+        train_loader = DataLoader(Cooperative_Perception_train_dataset,
                                   batch_sampler=batch_sampler_train,
                                   num_workers=num_workers, # These were 8, due to error I set them to 0
-                                  collate_fn=opencood_train_dataset.collate_batch_train)
-        val_loader = DataLoader(opencood_validate_dataset,
+                                  collate_fn=Cooperative_Perception_train_dataset.collate_batch_train)
+        val_loader = DataLoader(Cooperative_Perception_validate_dataset,
                                 sampler=sampler_val,
                                 num_workers=num_workers,
-                                collate_fn=opencood_train_dataset.collate_batch_train,
+                                collate_fn=Cooperative_Perception_train_dataset.collate_batch_train,
                                 drop_last=False)
     else:
         print('*********************Step4: DataLoader Creating*********************')
         print('Since Distributed training environment not detected. Initializing DataLoader for data parallelization is done.')
         print(f"Numnber of workers was set to:{num_workers}")
-        train_loader = DataLoader(opencood_train_dataset,
+        train_loader = DataLoader(Cooperative_Perception_train_dataset,
                                   batch_size=hypes['train_params']['batch_size'],
                                   num_workers=num_workers,
-                                  collate_fn=opencood_train_dataset.collate_batch_train,
+                                  collate_fn=Cooperative_Perception_train_dataset.collate_batch_train,
                                   shuffle=True,
                                   pin_memory=True,
                                   drop_last=True,
                                   prefetch_factor=2)
-        val_loader = DataLoader(opencood_validate_dataset,
+        val_loader = DataLoader(Cooperative_Perception_validate_dataset,
                                 batch_size=hypes['train_params']['batch_size'],
                                 num_workers=num_workers,
-                                collate_fn=opencood_train_dataset.collate_batch_train,
+                                collate_fn=Cooperative_Perception_train_dataset.collate_batch_train,
                                 shuffle=False,
                                 pin_memory=True,
                                 drop_last=True,

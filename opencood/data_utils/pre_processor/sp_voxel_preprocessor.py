@@ -8,7 +8,7 @@ import sys
 import numpy as np
 import torch
 from cumm import tensorview as tv
-from opencood.data_utils.pre_processor.base_preprocessor import \
+from Cooperative_Perception.data_utils.pre_processor.base_preprocessor import \
     BasePreprocessor
 
 

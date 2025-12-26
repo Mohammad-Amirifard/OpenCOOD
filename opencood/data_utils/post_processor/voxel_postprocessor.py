@@ -13,11 +13,11 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from opencood.data_utils.post_processor.base_postprocessor \
+from Cooperative_Perception.data_utils.post_processor.base_postprocessor \
     import BasePostprocessor
-from opencood.utils import box_utils
-from opencood.utils.box_overlaps import bbox_overlaps
-from opencood.visualization import vis_utils
+from Cooperative_Perception.utils import box_utils
+from Cooperative_Perception.utils.box_overlaps import bbox_overlaps
+from Cooperative_Perception.visualization import vis_utils
 
 
 class VoxelPostprocessor(BasePostprocessor):
@@ -431,7 +431,7 @@ class VoxelPostprocessor(BasePostprocessor):
             Save the visualization results to given path.
 
         dataset : BaseDataset
-            opencood dataset object.
+            Cooperative_Perception dataset object.
 
         """
         vis_utils.visualize_single_sample_output_gt(pred_box_tensor,

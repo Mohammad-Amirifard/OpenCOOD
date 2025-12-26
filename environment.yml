@@ -1,4 +1,4 @@
-name: opencood
+name: Cooperative_Perception
 channels:
   - defaults
 dependencies:

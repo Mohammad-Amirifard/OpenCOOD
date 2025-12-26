@@ -4,7 +4,7 @@ from functools import partial
 
 import numpy as np
 
-from opencood.data_utils.augmentor import augment_utils # Comments added
+from Cooperative_Perception.data_utils.augmentor import augment_utils # Comments added
 
 
 class DataAugmentor(object):

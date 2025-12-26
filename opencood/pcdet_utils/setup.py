@@ -17,7 +17,7 @@ setup(
     cmdclass={'build_ext': BuildExtension},
     ext_modules=[make_cuda_ext(
                 name='iou3d_nms_cuda',
-                module='opencood.pcdet_utils.iou3d_nms',
+                module='Cooperative_Perception.pcdet_utils.iou3d_nms',
                 sources=[
                     'src/iou3d_cpu.cpp',
                     'src/iou3d_nms_api.cpp',
@@ -26,7 +26,7 @@ setup(
                 ]),
         make_cuda_ext(
             name='roiaware_pool3d_cuda',
-            module='opencood.pcdet_utils.roiaware_pool3d',
+            module='Cooperative_Perception.pcdet_utils.roiaware_pool3d',
             sources=[
                 'src/roiaware_pool3d.cpp',
                 'src/roiaware_pool3d_kernel.cu',
@@ -34,7 +34,7 @@ setup(
         ),
         make_cuda_ext(
             name='pointnet2_stack_cuda',
-            module='opencood.pcdet_utils.pointnet2.pointnet2_stack',
+            module='Cooperative_Perception.pcdet_utils.pointnet2.pointnet2_stack',
             sources=[
                 'src/pointnet2_api.cpp',
                 'src/ball_query.cpp',
@@ -49,7 +49,7 @@ setup(
         ),
         make_cuda_ext(
             name='pointnet2_batch_cuda',
-            module='opencood.pcdet_utils.pointnet2.pointnet2_batch',
+            module='Cooperative_Perception.pcdet_utils.pointnet2.pointnet2_batch',
             sources=[
                 'src/pointnet2_api.cpp',
                 'src/ball_query.cpp',

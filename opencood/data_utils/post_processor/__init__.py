@@ -1,5 +1,5 @@
 # There is no additional fucntion here.
-from opencood.data_utils.post_processor.voxel_postprocessor import VoxelPostprocessor
+from Cooperative_Perception.data_utils.post_processor.voxel_postprocessor import VoxelPostprocessor
 
 
 __all__ = {

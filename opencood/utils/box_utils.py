@@ -12,8 +12,8 @@ import numpy as np
 
 import torch
 import torch.nn.functional as F
-import opencood.utils.common_utils as common_utils
-from opencood.utils.transformation_utils import x1_to_x2
+import Cooperative_Perception.utils.common_utils as common_utils
+from Cooperative_Perception.utils.transformation_utils import x1_to_x2
 
 
 def corner_to_center(corner3d, order='lwh'):
@@ -348,7 +348,7 @@ def get_mask_for_boxes_within_range_torch(boxes):
         bbx is within the range and False means the
         bbx is outside the range.
     """
-    from opencood.data_utils.datasets import GT_RANGE
+    from Cooperative_Perception.data_utils.datasets import GT_RANGE
 
     # mask out the gt bounding box out fixed range (-140, -40, -3, 140, 40 1)
     device = boxes.device

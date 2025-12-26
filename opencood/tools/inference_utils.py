@@ -9,7 +9,7 @@ from collections import OrderedDict
 import numpy as np
 import torch
 
-from opencood.utils.common_utils import torch_tensor_to_numpy
+from Cooperative_Perception.utils.common_utils import torch_tensor_to_numpy
 
 
 def inference_late_fusion(batch_data, model, dataset):
@@ -19,8 +19,8 @@ def inference_late_fusion(batch_data, model, dataset):
     Parameters
     ----------
     batch_data : dict
-    model : opencood.object
-    dataset : opencood.LateFusionDataset
+    model : Cooperative_Perception.object
+    dataset : Cooperative_Perception.LateFusionDataset
 
     Returns
     -------
@@ -48,8 +48,8 @@ def inference_early_fusion(batch_data, model, dataset):
     Parameters
     ----------
     batch_data : dict
-    model : opencood.object
-    dataset : opencood.EarlyFusionDataset
+    model : Cooperative_Perception.object
+    dataset : Cooperative_Perception.EarlyFusionDataset
 
     Returns
     -------
@@ -77,8 +77,8 @@ def inference_intermediate_fusion(batch_data, model, dataset):
     Parameters
     ----------
     batch_data : dict
-    model : opencood.object
-    dataset : opencood.EarlyFusionDataset
+    model : Cooperative_Perception.object
+    dataset : Cooperative_Perception.EarlyFusionDataset
 
     Returns
     -------
