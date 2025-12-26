@@ -190,8 +190,7 @@ def main():
     print(f"Number of batch_Data to analyse in each epoch = {len(train_loader)}")
 
     
-    train_loss_epoch = {}
-    val_loss_epoch = {}
+    loss_dict = {}
     for epoch in range(init_epoch, max(epoches, init_epoch)):
         st = time.time()
 
@@ -214,7 +213,7 @@ def main():
         
 
         index =0
-        train_total_loss_batch=[]
+        train_loss_batch=[]
         for batch_data in train_loader:
 
             # the model will be evaluation mode during validation
@@ -261,16 +260,18 @@ def main():
 
             if hypes['lr_scheduler']['core_method'] == 'cosineannealwarm':
                 scheduler.step_update(epoch * num_steps + index)
-            train_total_loss_batch.append(loss_value)
-            writer.add_scalar('Train_Total_Loss/batch', loss_value,
+            train_loss_batch.append(loss_value)
+            writer.add_scalar('Train_Loss/batch', loss_value,
                               epoch * len(train_loader) + index)
             writer.flush()
             index +=1
 
 
+        print(f"At epoch {epoch}, the mean train loss is: {np.mean(train_loss_batch)}")
+        print(f"At epoch {epoch}, the min train loss is: {np.min(train_loss_batch)}")
+        writer.add_scalar('Train_Loss/epoch', np.mean(train_loss_batch), epoch)
+        writer.flush()
 
-
-        writer.add_scalar('Train_Total_Loss/epoch', np.mean(train_total_loss_batch), epoch)
    
 
         if epoch % hypes['train_params']['save_freq'] == 0:
@@ -278,9 +279,10 @@ def main():
                 os.path.join(saved_path, 'net_epoch%d.pth' % (epoch + 1)))
 
         if epoch % hypes['train_params']['eval_freq'] == 0:
-            valid_loss_batch = []
+            
 
             with torch.no_grad():
+                valid_loss_batch = []
                 for i, batch_data in enumerate(val_loader):
                     model.eval()
 
@@ -295,10 +297,24 @@ def main():
                                       epoch * len(val_loader) + i)
                     writer.flush()
 
-            print('At epoch %d, the validation loss is %f' % (epoch,
+            print('At epoch %d, the mean validation loss is: %f' % (epoch,
                                                               np.mean(valid_loss_batch)))
-
+            print('At epoch %d, the min validation loss is: %f' % (epoch,
+                                                              np.min(valid_loss_batch)))
+            writer.add_scalar('Validate_Loss/epoch', np.mean(valid_loss_batch), epoch)
+            writer.flush()
  
+
+        loss_dict[epoch] = {
+            'train_loss': np.mean(train_loss_batch),
+            'train_loss_min': np.min(train_loss_batch),
+            'train_loss_batch': train_loss_batch,
+            'val_loss': np.mean(valid_loss_batch) if 'valid_loss_batch' in locals() else None,
+            'val_loss_min': np.min(valid_loss_batch) if 'valid_loss_batch' in locals() else None,
+            'val_loss_batch': valid_loss_batch if 'valid_loss_batch' in locals() else None
+        }
+        with open(os.path.join(saved_path, 'loss_dict.json'), 'w') as f:
+            json.dump(loss_dict, f, indent=4)
 
         sp = time.time()
         print(f"Total training time for epoch {epoch} : {((sp - st)/60)} minutes")
