@@ -24,7 +24,7 @@ import time
 import numpy as np
 warnings.filterwarnings("ignore")
 
-from torchviz import make_dot
+
 
 
 def train_parser():
@@ -190,7 +190,8 @@ def main():
     print(f"Number of batch_Data to analyse in each epoch = {len(train_loader)}")
 
     
-    
+    train_loss_epoch = {}
+    val_loss_epoch = {}
     for epoch in range(init_epoch, max(epoches, init_epoch)):
         st = time.time()
 
@@ -213,7 +214,7 @@ def main():
         
 
         index =0
-        train_loss_batch=[]
+        train_total_loss_batch=[]
         for batch_data in train_loader:
 
             # the model will be evaluation mode during validation
@@ -260,15 +261,17 @@ def main():
 
             if hypes['lr_scheduler']['core_method'] == 'cosineannealwarm':
                 scheduler.step_update(epoch * num_steps + index)
-            train_loss_batch.append(loss_value)
-            writer.add_scalar('Train_Loss/batch', loss_value,
+            train_total_loss_batch.append(loss_value)
+            writer.add_scalar('Train_Total_Loss/batch', loss_value,
                               epoch * len(train_loader) + index)
             writer.flush()
             index +=1
 
 
-        writer.add_scalar('Train_Loss/epoch', np.mean(train_loss_batch), epoch)
-        writer.add_scalar('Train_Loss/min_batch', np.min(train_loss_batch), epoch)
+
+
+        writer.add_scalar('Train_Total_Loss/epoch', np.mean(train_total_loss_batch), epoch)
+   
 
         if epoch % hypes['train_params']['save_freq'] == 0:
             torch.save(model_without_ddp.state_dict(),

@@ -143,7 +143,7 @@ class PointPillarLoss(nn.Module):
                                'reg_loss': reg_loss,
                                'conf_loss': conf_loss})
 
-        return total_loss # Includes both classification and regression loss
+        return total_loss # is sum of both classification and regression loss
 
     def cls_loss_func(self, input: torch.Tensor,
                       target: torch.Tensor,
@@ -242,7 +242,7 @@ class PointPillarLoss(nn.Module):
                       total_loss.item(), conf_loss.item(), reg_loss.item()))
 
 
-        writer.add_scalar('Regression_loss', reg_loss.item(),
+        writer.add_scalar('Train_Regression_loss/Batch', reg_loss.item(),
                           epoch*batch_len + batch_id)
-        writer.add_scalar('Confidence_loss', conf_loss.item(),
+        writer.add_scalar('Train_Confidence_loss/Batch', conf_loss.item(),
                           epoch*batch_len + batch_id)
