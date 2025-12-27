@@ -70,8 +70,8 @@ def train_parser():
 
 start_time = time.time()
 def main():
-    num_workers = 2
-    prefetch_factor = 2
+    num_workers = 4
+    prefetch_factor = 4
     opt = train_parser()
     print("*********************Step0: Train parser completed *********************")
     print('You passed the following options:\n',opt)
