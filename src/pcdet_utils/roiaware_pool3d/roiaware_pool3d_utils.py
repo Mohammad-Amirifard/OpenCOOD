@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 from torch.autograd import Function
 
-from Cooperative_Perception.utils import common_utils
-from Cooperative_Perception.pcdet_utils.roiaware_pool3d import roiaware_pool3d_cuda
+from src.utils import common_utils
+from src.pcdet_utils.roiaware_pool3d import roiaware_pool3d_cuda
 
 
 def points_in_boxes_cpu(points, boxes):

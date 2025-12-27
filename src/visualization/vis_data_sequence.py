@@ -7,9 +7,9 @@ import os
 import argparse
 from torch.utils.data import DataLoader
 
-from Cooperative_Perception.hypes_yaml.yaml_utils import load_yaml
-from Cooperative_Perception.visualization import vis_utils
-from Cooperative_Perception.data_utils.datasets.early_fusion_vis_dataset import \
+from src.hypes_yaml.yaml_utils import load_yaml
+from src.visualization import vis_utils
+from src.data_utils.datasets.early_fusion_vis_dataset import \
     EarlyFusionVisDataset
 
 

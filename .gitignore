@@ -136,7 +136,7 @@ logs/
 *.c
 *.so
 .idea
-
+sample_data/    
 opv2v_data_dumping
 checkpoints
 DCOS.md

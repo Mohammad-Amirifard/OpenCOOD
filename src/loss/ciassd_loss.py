@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 
-from Cooperative_Perception.data_utils.post_processor.voxel_postprocessor import VoxelPostprocessor
-from Cooperative_Perception.pcdet_utils.iou3d_nms.iou3d_nms_utils import aligned_boxes_iou3d_gpu
+from src.data_utils.post_processor.voxel_postprocessor import VoxelPostprocessor
+from src.pcdet_utils.iou3d_nms.iou3d_nms_utils import aligned_boxes_iou3d_gpu
 
 
 class CiassdLoss(nn.Module):

@@ -18,7 +18,7 @@ def collect_yaml_files_by_folder(root_dir):
     return yaml_files_by_folder
 
 # Example usage:
-root_directory = r"C:\Users\mohammed.amirifard\Desktop\Github_Projects\Cooperative_Perception\testing_data - Copy"
+root_directory = r"C:\Users\mohammed.amirifard\Desktop\Github_Projects\OpenCOOD\validate"
 yaml_files = collect_yaml_files_by_folder(root_directory)
 
 import csv

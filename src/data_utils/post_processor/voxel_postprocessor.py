@@ -13,11 +13,11 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from Cooperative_Perception.data_utils.post_processor.base_postprocessor \
+from src.data_utils.post_processor.base_postprocessor \
     import BasePostprocessor
-from Cooperative_Perception.utils import box_utils
-from Cooperative_Perception.utils.box_overlaps import bbox_overlaps
-from Cooperative_Perception.visualization import vis_utils
+from src.utils import box_utils
+from src.utils.box_overlaps import bbox_overlaps
+from src.visualization import vis_utils
 
 
 class VoxelPostprocessor(BasePostprocessor):
@@ -431,7 +431,7 @@ class VoxelPostprocessor(BasePostprocessor):
             Save the visualization results to given path.
 
         dataset : BaseDataset
-            Cooperative_Perception dataset object.
+            src dataset object.
 
         """
         vis_utils.visualize_single_sample_output_gt(pred_box_tensor,

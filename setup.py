@@ -16,12 +16,12 @@ def _read_requirements_file():
 
 
 setup(
-    name='Cooperative_Perception',
+    name='V2V',
     packages=find_packages(),
     license='MIT',
     author='Mohammad Amirifard',
     description='An opensource pytorch framework for autonomous driving '
                 'cooperative detection',
-    long_description="You can find more details about Cooperative_Perception at ",
+    long_description="You can find more details about src at ",
     install_requires=_read_requirements_file(),
 )

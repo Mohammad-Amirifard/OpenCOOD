@@ -6,8 +6,8 @@ All Rights Reserved 2019-2020.
 import torch
 import numpy as np
 
-from Cooperative_Perception.utils.common_utils import check_numpy_to_torch
-from Cooperative_Perception.pcdet_utils.iou3d_nms import iou3d_nms_cuda
+from src.utils.common_utils import check_numpy_to_torch
+from src.pcdet_utils.iou3d_nms import iou3d_nms_cuda
 
 
 def boxes_bev_iou_cpu(boxes_a, boxes_b):

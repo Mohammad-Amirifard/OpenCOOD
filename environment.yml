@@ -1,4 +1,4 @@
-name: Cooperative_Perception
+name: V2V
 channels:
   - defaults
 dependencies:

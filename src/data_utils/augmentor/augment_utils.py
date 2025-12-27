@@ -3,7 +3,7 @@
 
 import numpy as np
 
-from Cooperative_Perception.utils import common_utils
+from src.utils import common_utils
 
 
 def random_flip_along_x(gt_boxes, points):

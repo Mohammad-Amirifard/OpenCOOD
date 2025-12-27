@@ -5,17 +5,17 @@
 
 import torch.nn as nn
 
-from Cooperative_Perception.models.sub_modules.pillar_vfe import PillarVFE
-from Cooperative_Perception.models.sub_modules.point_pillar_scatter import PointPillarScatter
-from Cooperative_Perception.models.sub_modules.base_bev_backbone import BaseBEVBackbone
-from Cooperative_Perception.models.sub_modules.downsample_conv import DownsampleConv
-from Cooperative_Perception.models.fuse_modules.V2VAM import V2V_AttFusion
+from src.models.sub_modules.pillar_vfe import PillarVFE
+from src.models.sub_modules.point_pillar_scatter import PointPillarScatter
+from src.models.sub_modules.base_bev_backbone import BaseBEVBackbone
+from src.models.sub_modules.downsample_conv import DownsampleConv
+from src.models.fuse_modules.V2VAM import V2V_AttFusion
 
 
-#from Cooperative_Perception.models.sub_modules.noise import data_dropout, data_dropout_uniform,transmission_with_noise
+#from src.models.sub_modules.noise import data_dropout, data_dropout_uniform,transmission_with_noise
 import numpy as np
 import torch
-#from Cooperative_Perception.models.fuse_modules.self_attn import regroup
+#from src.models.fuse_modules.self_attn import regroup
 import pdb
 
 class PointPillarintermediateV2VAM(nn.Module):

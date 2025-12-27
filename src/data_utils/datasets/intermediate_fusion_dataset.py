@@ -12,15 +12,15 @@ from collections import OrderedDict
 import numpy as np
 import torch
 
-import Cooperative_Perception.data_utils.datasets
-import Cooperative_Perception.data_utils.post_processor as post_processor
-from Cooperative_Perception.utils import box_utils
-from Cooperative_Perception.data_utils.datasets import basedataset
-from Cooperative_Perception.data_utils.pre_processor import build_preprocessor
-from Cooperative_Perception.utils.pcd_utils import \
+import src.data_utils.datasets
+import src.data_utils.post_processor as post_processor
+from src.utils import box_utils
+from src.data_utils.datasets import basedataset
+from src.data_utils.pre_processor import build_preprocessor
+from src.utils.pcd_utils import \
     mask_points_by_range, mask_ego_points, shuffle_points, \
     downsample_lidar_minimum
-from Cooperative_Perception.utils.transformation_utils import x1_to_x2
+from src.utils.transformation_utils import x1_to_x2
 
 
 class IntermediateFusionDataset(basedataset.BaseDataset):
@@ -100,7 +100,7 @@ class IntermediateFusionDataset(basedataset.BaseDataset):
                                   selected_cav_base['params'][
                                       'lidar_pose'][1] - ego_lidar_pose[
                                       1]) ** 2)
-            if distance > Cooperative_Perception.data_utils.datasets.COM_RANGE:
+            if distance > src.data_utils.datasets.COM_RANGE:
                 continue
 
             selected_cav_processed = self.get_item_single_car(

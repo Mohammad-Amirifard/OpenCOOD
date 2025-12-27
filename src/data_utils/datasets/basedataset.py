@@ -12,11 +12,11 @@ import torch
 import numpy as np
 from torch.utils.data import Dataset
 
-import Cooperative_Perception.utils.pcd_utils as pcd_utils # Comments added
-from Cooperative_Perception.utils.pcd_utils import downsample_lidar_minimum # Comments Added
-from Cooperative_Perception.utils.transformation_utils import x1_to_x2 # Comments Added
-from Cooperative_Perception.data_utils.augmentor.data_augmentor import DataAugmentor # Comments Added
-from Cooperative_Perception.hypes_yaml.yaml_utils import load_yaml # Comments Added
+import src.utils.pcd_utils as pcd_utils # Comments added
+from src.utils.pcd_utils import downsample_lidar_minimum # Comments Added
+from src.utils.transformation_utils import x1_to_x2 # Comments Added
+from src.data_utils.augmentor.data_augmentor import DataAugmentor # Comments Added
+from src.hypes_yaml.yaml_utils import load_yaml # Comments Added
 
 
 
@@ -44,14 +44,14 @@ class BaseDataset(Dataset):
         The list to record each scenario's data length. This is used to
         retrieve the correct index during training.
 
-    pre_processor : Cooperative_Perception.pre_processor
+    pre_processor : src.pre_processor
         Used to preprocess the raw data.
 
-    post_processor : Cooperative_Perception.post_processor
+    post_processor : src.post_processor
         Used to generate training labels and convert the model outputs to
         bbx formats.
 
-    data_augmentor : Cooperative_Perception.data_augmentor
+    data_augmentor : src.data_augmentor
         Used to augment data.
 
     """

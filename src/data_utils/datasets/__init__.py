@@ -7,7 +7,7 @@ done
 # different dataset objects based on their configuration.
 # ------------------------------------------------------------------------------
 
-from Cooperative_Perception.data_utils.datasets.intermediate_fusion_dataset import IntermediateFusionDataset
+from src.data_utils.datasets.intermediate_fusion_dataset import IntermediateFusionDataset
 
 
 # Mapping of dataset class names to their corresponding classes for dynamic instantiation
@@ -56,7 +56,7 @@ def build_dataset(dataset_cfg, visualize=False, train=True):
     dataset_name = dataset_cfg['fusion']['core_method']
     error_message = (
         f"{dataset_name} is not found. "
-        f"Please add your dataset class to Cooperative_Perception/data_utils/datasets/init.py"
+        f"Please add your dataset class to src/data_utils/datasets/init.py"
     )
 
     assert dataset_name in __all__, error_message

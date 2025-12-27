@@ -12,11 +12,11 @@ import torch
 import open3d as o3d
 from torch.utils.data import DataLoader
 
-import Cooperative_Perception.hypes_yaml.yaml_utils as yaml_utils
-from Cooperative_Perception.tools import train_utils, inference_utils
-from Cooperative_Perception.data_utils.datasets import build_dataset
-from Cooperative_Perception.utils import eval_utils
-from Cooperative_Perception.visualization import vis_utils
+import src.hypes_yaml.yaml_utils as yaml_utils
+from src.tools import train_utils, inference_utils
+from src.data_utils.datasets import build_dataset
+from src.utils import eval_utils
+from src.visualization import vis_utils
 import matplotlib.pyplot as plt
 
 
@@ -55,13 +55,13 @@ def main():
     hypes = yaml_utils.load_yaml(None, opt)
 
     print('Dataset Building')
-    Cooperative_Perception_dataset = build_dataset(hypes, visualize=True, train=False)
-    print(f"{len(Cooperative_Perception_dataset)} samples found.")
+    src_dataset = build_dataset(hypes, visualize=True, train=False)
+    print(f"{len(src_dataset)} samples found.")
     num_workers = 0
-    data_loader = DataLoader(Cooperative_Perception_dataset,
+    data_loader = DataLoader(src_dataset,
                              batch_size=1,
                              num_workers=num_workers,
-                             collate_fn=Cooperative_Perception_dataset.collate_batch_test,
+                             collate_fn=src_dataset.collate_batch_test,
                              shuffle=False,
                              pin_memory=False,
                              drop_last=False)
@@ -109,17 +109,17 @@ def main():
                 pred_box_tensor, pred_score, gt_box_tensor = \
                     inference_utils.inference_late_fusion(batch_data,
                                                           model,
-                                                          Cooperative_Perception_dataset)
+                                                          src_dataset)
             elif opt.fusion_method == 'early':
                 pred_box_tensor, pred_score, gt_box_tensor = \
                     inference_utils.inference_early_fusion(batch_data,
                                                            model,
-                                                           Cooperative_Perception_dataset)
+                                                           src_dataset)
             elif opt.fusion_method == 'intermediate':
                 pred_box_tensor, pred_score, gt_box_tensor = \
                     inference_utils.inference_intermediate_fusion(batch_data,
                                                                   model,
-                                                                  Cooperative_Perception_dataset)
+                                                                  src_dataset)
             else:
                 raise NotImplementedError('Only early, late and intermediate'
                                           'fusion is supported.')
@@ -158,13 +158,13 @@ def main():
                         os.makedirs(vis_save_path)
                     vis_save_path = os.path.join(vis_save_path, '%05d.png' % i)
 
-                Cooperative_Perception_dataset.visualize_result(pred_box_tensor,
+                src_dataset.visualize_result(pred_box_tensor,
                                                   gt_box_tensor,
                                                   batch_data['ego'][
                                                       'origin_lidar'],
                                                   opt.show_vis,
                                                   vis_save_path,
-                                                  dataset=Cooperative_Perception_dataset)
+                                                  dataset=src_dataset)
 
             if opt.show_sequence:
                 pcd, pred_o3d_box, gt_o3d_box = \
