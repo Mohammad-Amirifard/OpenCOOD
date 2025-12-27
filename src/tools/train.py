@@ -70,7 +70,7 @@ def train_parser():
 
 start_time = time.time()
 def main():
-    num_workers = 2
+    num_workers = 4
     opt = train_parser()
     print("*********************Step0: Train parser completed *********************")
     print('You passed the following options:\n',opt)
@@ -120,7 +120,7 @@ def main():
                                   shuffle=True,
                                   pin_memory=True,
                                   drop_last=True,
-                                  prefetch_factor=2)
+                                  prefetch_factor=4)
         val_loader = DataLoader(src_validate_dataset,
                                 batch_size=hypes['train_params']['batch_size'],
                                 num_workers=num_workers,
@@ -128,7 +128,7 @@ def main():
                                 shuffle=False,
                                 pin_memory=True,
                                 drop_last=True,
-                                prefetch_factor=2)
+                                prefetch_factor=4)
 
     print('*********************Step5: Creating Model*********************')
     model = train_utils.create_model(hypes)
