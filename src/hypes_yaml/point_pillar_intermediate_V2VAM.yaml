@@ -118,6 +118,6 @@ loss:
 lr_scheduler:
   core_method: multistep #step, multistep and Exponential support
   gamma: 0.1
-  step_size: [10,30,50,60] # Default [15,40,60]
+  step_size: [10,20,30,50,60] # Default [15,40,60]
 
 
