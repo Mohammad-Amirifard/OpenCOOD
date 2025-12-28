@@ -216,6 +216,7 @@ def main():
 
         index =0
         train_loss_batch=[]
+        print("Training Epoch %d .........." % epoch)   
         for batch_data in train_loader:
 
             # the model will be evaluation mode during validation
@@ -269,8 +270,9 @@ def main():
             index +=1
 
 
-        print(f"At epoch {epoch}, the mean train loss is: {np.mean(train_loss_batch)}")
+        print(f"\nAt epoch {epoch}, the mean train loss is: {np.mean(train_loss_batch)}")
         print(f"At epoch {epoch}, the min train loss is: {np.min(train_loss_batch)}")
+        
         writer.add_scalar('Train_Loss/epoch', np.mean(train_loss_batch), epoch)
         writer.flush()
 
@@ -285,6 +287,7 @@ def main():
 
             with torch.no_grad():
                 valid_loss_batch = []
+                print('Validating epoch %d ..........' % epoch)
                 for i, batch_data in enumerate(val_loader):
                     model.eval()
 
@@ -305,7 +308,6 @@ def main():
                                                               np.min(valid_loss_batch)))
             writer.add_scalar('Validate_Loss/epoch', np.mean(valid_loss_batch), epoch)
             writer.flush()
- 
 
         loss_dict[epoch] = {
             'train_loss': np.mean(train_loss_batch),
@@ -320,7 +322,8 @@ def main():
 
         sp = time.time()
         print(f"Total training time for epoch {epoch} : {((sp - st)/60)} minutes")
-    
+        print('-'*50)
+
     print('Training Finished, checkpoints saved to %s' % saved_path)
 
 
