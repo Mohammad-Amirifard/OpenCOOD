@@ -57,7 +57,7 @@ def main():
     print('Dataset Building')
     src_dataset = build_dataset(hypes, visualize=True, train=False)
     print(f"{len(src_dataset)} samples found.")
-    num_workers = 0
+    num_workers = 4
     data_loader = DataLoader(src_dataset,
                              batch_size=1,
                              num_workers=num_workers,
@@ -70,6 +70,7 @@ def main():
     model = train_utils.create_model(hypes)
     # we assume gpu is necessary
     if torch.cuda.is_available():
+        print('The code is run on GPU.')
         model.cuda()
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -100,9 +101,9 @@ def main():
         for _ in range(50):
             vis_aabbs_gt.append(o3d.geometry.LineSet())
             vis_aabbs_pred.append(o3d.geometry.LineSet())
-
+    print('Start inference...')
+    print(f'Total {len(data_loader)} samples to be evaluated.')
     for i, batch_data in tqdm(enumerate(data_loader)):
-        print("Here i is: ", i)
         with torch.no_grad():
             batch_data = train_utils.to_device(batch_data, device)
             if opt.fusion_method == 'late':
