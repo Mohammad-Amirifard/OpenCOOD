@@ -13,7 +13,7 @@ yaml_parser: "load_point_pillar_params" # Name of the parser
 #################################### Training Parameters  ####################################
 train_params:
   batch_size: &batch_size 4 # Batch size 2 and 4 for val and testing. Written in Point-Pillar paper
-  epoches: 160  # 160 and 320. Written in Point-Pillar paper
+  epoches: 65  # 160 and 320. Written in Point-Pillar paper
   eval_freq: 1
   save_freq: 1
   max_cav: &max_cav 5 # Written  in V2VAM paper

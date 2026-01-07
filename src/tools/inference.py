@@ -59,7 +59,7 @@ def main():
     print(f"{len(src_dataset)} samples found.")
     num_workers = 4
     data_loader = DataLoader(src_dataset,
-                             batch_size=4,
+                             batch_size=1,
                              num_workers=num_workers,
                              collate_fn=src_dataset.collate_batch_test,
                              shuffle=False,
